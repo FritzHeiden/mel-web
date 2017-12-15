@@ -23,6 +23,6 @@
   "dependencies": {
     "express": "^4.16.2",
     "nedb": "^1.8.0",
-    "mel-core": "git+https://github.com/fritzendglitg/mel-core"
+    "mel-core": "git+https://github.com/fritzendgltig/mel-core"
   }
 }
