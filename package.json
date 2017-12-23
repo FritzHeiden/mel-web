@@ -1,7 +1,7 @@
 {
   "name": "mel-web",
   "version": "0.0.0",
-  "main": "./src/core.js",
+  "main": "./dist/mel-web.js",
   "author": "Fritz Heiden",
   "license": "MIT",
   "scripts": {
@@ -25,5 +25,8 @@
     "source-map-loader": "^0.2.3",
     "style-loader": "^0.19.0",
     "webpack": "^3.8.1"
+  },
+  "dependencies": {
+    "mel-core": "git+https://github.com/fritzendgltig/mel-core"
   }
 }
