@@ -18,11 +18,12 @@
     "raw-loader": "^0.5.1",
     "source-map-loader": "^0.2.3",
     "standard": "^10.0.3",
-    "webpack": "^3.8.1"
+    "webpack": "^3.8.1",
+    "webpack-link": "^0.2.0"
   },
   "dependencies": {
     "express": "^4.16.2",
-    "nedb": "^1.8.0",
-    "mel-core": "git+https://github.com/fritzendgltig/mel-core"
+    "mel-core": "git+https://github.com/fritzendgltig/mel-core",
+    "nedb": "^1.8.0"
   }
 }
