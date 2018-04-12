@@ -1,13 +1,15 @@
 import path from 'path'
 import fs from 'fs'
+import { FileSystem } from 'mel-core'
 
-export default class NodeFileSystem {
+export default class NodeFileSystem extends FileSystem {
   constructor () {
-    this.APPLICATION_DIRECTORY = this._getApplicationDirectory()
+    super()
+    this._APPLICATION_DIRECTORY = path.dirname(process.mainModule.filename)
   }
 
-  _getApplicationDirectory () {
-    return path.dirname(process.mainModule.filename)
+  get APPLICATION_DIRECTORY () {
+    return this._APPLICATION_DIRECTORY
   }
 
   readFile (filePath) {
@@ -34,12 +36,11 @@ export default class NodeFileSystem {
     })
   }
 
-  readDir (dirPath) {
+  async readDir (dirPath) {
     return new Promise((resolve, reject) => {
       fs.readdir(dirPath, (err, files) => {
         if (err) {
           reject(err)
-          return
         }
         resolve(files)
       })
@@ -66,7 +67,7 @@ export default class NodeFileSystem {
           return
         }
 
-        resolve({isDirectory: stats.isDirectory(), lastModified: stats.mtime})
+        resolve({isDirectory: stats.isDirectory(), lastModified: stats.mtime.getTime() })
       })
     })
   }

@@ -1,5 +1,14 @@
 var path = require('path')
-var WebpackLinkPlugin = require('webpack-link')
+var fs = require('fs')
+
+var nodeModules = {}
+fs.readdirSync('node_modules')
+  .filter(function (x) {
+    return ['.bin'].indexOf(x) === -1
+  })
+  .forEach(function (mod) {
+    nodeModules[mod] = 'commonjs ' + mod
+  })
 
 var DIST_DIR = path.join(__dirname, 'dist')
 var CLIENT_DIR = path.join(__dirname, 'src')
@@ -39,12 +48,8 @@ module.exports = {
       }
     ]
   },
-  plugins: [
-    new WebpackLinkPlugin({
-      loadModule: path.resolve(__dirname, '../mel-core')
-    })
-  ],
-  target: 'node'
+  target: 'node',
+  externals: nodeModules
   // plugins: [
   //     new webpack.DefinePlugin({
   //         'process.env.NODE_ENV': JSON.stringify('development')
