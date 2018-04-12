@@ -1,31 +1,32 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import {BrowserRouter as Router, Route} from 'react-router-dom';
-import LibraryView from "./views/library-view";
-import ArtistView from "./views/artist-view";
-import AlbumView from "./views/album-view";
-import style from "./web-app.sass";
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { BrowserRouter, Route } from 'react-router-dom'
+import LibraryView from './views/library-view'
+import ArtistView from './views/artist-view'
+import AlbumView from './views/album-view'
+import style from './web-app.sass'
+import { MelClientSocket } from 'mel-core'
+import SocketIoWebSocket from './network/socket-io-web-socket'
+import NavigationHistoryBar from './components/navigation-history-bar'
+import DownloadManager from './components/download-manager'
 
 class WebApp extends React.Component {
-    constructor() {
-        super();
-        console.log("Initializing WebApp");
-    }
+  constructor () {
+    super()
+    console.log('Initializing WebApp')
+    this._melClientSocket = new MelClientSocket(new SocketIoWebSocket('localhost', 3541))
+  }
 
-    render() {
-        return <div className="web-app">
-
-            <div id="content" className="content">
-            <Router>
-                <div>
-                    <Route exact path="/" component={LibraryView}/>
-                    <Route path="/artist/:artistId" component={ArtistView}/>
-                    <Route path="/album/:albumId" component={AlbumView}/>
-                </div>
-            </Router>
-            </div>
-        </div>
-    }
+  render () {
+    return <div className={style.wrapper}>
+      <div id="content" className={style.content}>
+        <Route exact path="/" render={props => <LibraryView {...props} melClientSocket={this._melClientSocket}/>}/>
+        <Route path="/artist/:artistId" render={props => <ArtistView {...props} melClientSocket={this._melClientSocket}/>}/>
+        <Route path="/album/:albumId" render={props => <AlbumView {...props} melClientSocket={this._melClientSocket}/>}/>
+        <DownloadManager state={DownloadManager.MINIMIZED}/>
+      </div>
+    </div>
+  }
 }
 
 // const style = {
@@ -45,4 +46,4 @@ class WebApp extends React.Component {
 //     margin: 0,
 // };
 
-ReactDOM.render(<WebApp/>, document.getElementById('root'));
+ReactDOM.render(<BrowserRouter><WebApp/></BrowserRouter>, document.getElementById('root'))
