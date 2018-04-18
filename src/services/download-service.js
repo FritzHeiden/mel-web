@@ -15,7 +15,7 @@ class DownloadService {
   }
 
   addArtist (newArtist) {
-    let artist = this._artists.find(artist => artist.id = newArtist.id)
+    let artist = this._artists.find(artist => (artist.id = newArtist.id))
     if (!artist) {
       this._artists.push(newArtist)
       this._listeners.forEach(listener => listener(this._artists))
@@ -46,7 +46,9 @@ class DownloadService {
   }
 
   addTrack (newTrack) {
-    let artist = this._artists.find(artist => artist.id === newTrack.album.artist.id)
+    let artist = this._artists.find(
+      artist => artist.id === newTrack.album.artist.id
+    )
     if (!artist) {
       let album = newTrack.album
       album.addTrack(newTrack)
@@ -72,7 +74,9 @@ class DownloadService {
   }
 
   containsAlbum (needleAlbum) {
-    let artist = this._artists.find(artist => artist.id === needleAlbum.artist.id)
+    let artist = this._artists.find(
+      artist => artist.id === needleAlbum.artist.id
+    )
     if (!artist) {
       return false
     }

@@ -21,11 +21,9 @@ export default class NavigationHistoryBar extends React.Component {
 
   render () {
     if (this.state.locations) {
-      return <div className={style.wrapper}>
-        {this._renderLocations()}
-      </div>
+      return <div className={style.wrapper}>{this._renderLocations()}</div>
     } else {
-      return <div/>
+      return <div />
     }
   }
 
@@ -34,16 +32,26 @@ export default class NavigationHistoryBar extends React.Component {
     for (let i = 0; i < this.state.locations.length; i++) {
       let location = this.state.locations[i]
       if (location.icon) {
-        elements.push(<Link key={i} className={style.element} to={location.url}>
-          <i className={location.icon}/>
-          <div>{location.name}</div>
-        </Link>)
+        elements.push(
+          <Link key={i} className={style.element} to={location.url}>
+            <i className={location.icon} />
+            <div>{location.name}</div>
+          </Link>
+        )
       } else {
-        elements.push(<Link key={i} className={style.element} to={location.url}>{location.name}</Link>)
+        elements.push(
+          <Link key={i} className={style.element} to={location.url}>
+            {location.name}
+          </Link>
+        )
       }
 
       if (i + 1 !== this.state.locations.length) {
-        elements.push(<div key={`splitter${i}`} className={style.splitter}><i className="fas fa-angle-right"/></div>)
+        elements.push(
+          <div key={`splitter${i}`} className={style.splitter}>
+            <i className='fas fa-angle-right' />
+          </div>
+        )
       }
     }
 

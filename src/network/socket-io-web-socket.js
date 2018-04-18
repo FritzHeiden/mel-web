@@ -1,4 +1,4 @@
-import {WebSocket} from 'mel-core'
+import { WebSocket } from 'mel-core'
 import SocketClient from 'socket.io-client'
 
 export default class SocketIoWebSocket extends WebSocket {

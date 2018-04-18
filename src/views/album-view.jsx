@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Album } from 'mel-core'
+import { Album } from '../../../mel-core/dist/mel-core'
 import NavigationHistoryBar from '../components/navigation-history-bar'
 import styles from './album-view.sass'
 import DownloadService from '../services/download-service'
@@ -51,57 +51,76 @@ export default class AlbumView extends React.Component {
     return this.state.album.tracks
       .sort((a, b) => a.number - b.number)
       .map(track => {
-        let listArtists = (artists) => {
+        let listArtists = artists => {
           if (artists) {
-            return track.artists.map((artist, index) =>
-              <Link to={{pathname: /artist/ + artist.id}}>
-                            <span>
-                                {artist.name}{index + 1 === album.artists.length ? '' : ', '}
-                            </span>
-              </Link>)
+            return track.artists.map((artist, index) => (
+              <Link to={{ pathname: /artist/ + artist.id }}>
+                <span>
+                  {artist.name}
+                  {index + 1 === album.artists.length ? '' : ', '}
+                </span>
+              </Link>
+            ))
           } else {
             return ''
           }
         }
-        return <div key={track.id}>
-          <span>{track.number} </span>
-          <span>{track.title}</span>
-          {/*{listArtists(track.artists)}*/}
-        </div>
+        return (
+          <div key={track.id}>
+            <span>{track.number} </span>
+            <span>{track.title}</span>
+            {/* {listArtists(track.artists)} */}
+          </div>
+        )
       })
   }
 
   renderOtherAlbums () {
-    return this.state.album.artist.albums.map(album =>
+    return this.state.album.artist.albums.map(album => (
       <div key={album.id}>
         <span>{album.year} </span>
         <span>{album.title}</span>
-      </div>)
+      </div>
+    ))
   }
 
   render () {
     if (this.state.album) {
-      return <div className={styles.wrapper}>
-        <NavigationHistoryBar locations={[
-          {name: 'Library', url: '/'},
-          {name: this.state.album.artist.name, url: `/artist/${this.state.album.artist.id}`, icon: 'fas fa-user'},
-          {name: this.state.album.title, url: `/album/${this.state.album.id}`, icon: 'fas fa-dot-circle'}
-        ]}/>
-        <div className={styles.albumWrapper}>
-          <div className={styles.albumInfo}>
-            <div className={styles.coverWrapper}>
-              <div className={styles.placeholder}><i className={'fas fa-dot-circle'}/></div>
-              <div className={styles.cover}/>
+      return (
+        <div className={styles.wrapper}>
+          <NavigationHistoryBar
+            locations={[
+              { name: 'Library', url: '/' },
+              {
+                name: this.state.album.artist.name,
+                url: `/artist/${this.state.album.artist.id}`,
+                icon: 'fas fa-user'
+              },
+              {
+                name: this.state.album.title,
+                url: `/album/${this.state.album.id}`,
+                icon: 'fas fa-dot-circle'
+              }
+            ]}
+          />
+          <div className={styles.albumWrapper}>
+            <div className={styles.albumInfo}>
+              <div className={styles.coverWrapper}>
+                <div className={styles.placeholder}>
+                  <i className={'fas fa-dot-circle'} />
+                </div>
+                <div className={styles.cover} />
+              </div>
+              <h1 className={styles.albumTitle}>{this.state.album.title}</h1>
+              {this._renderDownloadButton()}
             </div>
-            <h1 className={styles.albumTitle}>{this.state.album.title}</h1>
-            {this._renderDownloadButton()}
-          </div>
-          <div className={styles.musicWrapper}>
-            <h2>Tracks</h2>
-            {this._renderTracks()}
+            <div className={styles.musicWrapper}>
+              <h2>Tracks</h2>
+              {this._renderTracks()}
+            </div>
           </div>
         </div>
-      </div>
+      )
     } else {
       return <div>Loading ...</div>
     }
@@ -117,10 +136,14 @@ export default class AlbumView extends React.Component {
       icon = 'fas fa-download'
       text = 'Add to Downloads'
     }
-    return <div className={styles.download} onClick={() => this._addToDownloads()}>
-      <div className={styles.icon}><i className={icon}/></div>
-      <div>{text}</div>
-    </div>
+    return (
+      <div className={styles.download} onClick={() => this._addToDownloads()}>
+        <div className={styles.icon}>
+          <i className={icon} />
+        </div>
+        <div>{text}</div>
+      </div>
+    )
   }
 
   _renderTracks () {
@@ -140,14 +163,17 @@ export default class AlbumView extends React.Component {
       if (cdMap.size > 1) {
         captionLabel = <h3>{caption}</h3>
       }
-      elements.push(<div key={caption} className={styles.discWrapper}>
-        {captionLabel}
-        {tracks.sort((a, b) => a.number - b.number).map(track =>
-          <div key={track.id} className={styles.trackWrapper}>
-            <div className={styles.number}>{track.number}</div>
-            <div className={styles.title}>{track.title}</div>
-          </div>)}
-      </div>)
+      elements.push(
+        <div key={caption} className={styles.discWrapper}>
+          {captionLabel}
+          {tracks.sort((a, b) => a.number - b.number).map(track => (
+            <div key={track.id} className={styles.trackWrapper}>
+              <div className={styles.number}>{track.number}</div>
+              <div className={styles.title}>{track.title}</div>
+            </div>
+          ))}
+        </div>
+      )
     }
 
     return elements
@@ -155,7 +181,6 @@ export default class AlbumView extends React.Component {
 }
 
 /*
-
 
     if (this.state.artist) {
       return <div className={styles.wrapper}>

@@ -5,7 +5,7 @@ import style from './library-view.sass'
 export default class LibraryView extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {artists: []}
+    this.state = { artists: [] }
     this._melClientSocket = props.melClientSocket
     this._melClientSocket.getArtists().then(artists => {
       this.state.artists = artists
@@ -17,27 +17,25 @@ export default class LibraryView extends React.Component {
     if (this.state.artists) {
       return this.state.artists
         .filter(artist => artist !== undefined)
-        .sort((a, b) => (a.name).localeCompare(b.name))
-        .map((artist, index) =>
-          <Link to={{pathname: '/artist/' + artist.id}} key={index}>
-            <div className={style.listItem}>
-              {artist.name}
-            </div>
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((artist, index) => (
+          <Link to={{ pathname: '/artist/' + artist.id }} key={index}>
+            <div className={style.listItem}>{artist.name}</div>
           </Link>
-        )
+        ))
     } else {
       return <div>Loading ...</div>
     }
   }
 
   render () {
-    return <div className={style.wrapper}>
-      <h1>Library</h1>
-      <div className={style.listWrapper}>
-        <div className={style.list}>
-          {this.renderArtistList()}
+    return (
+      <div className={style.wrapper}>
+        <h1>Library</h1>
+        <div className={style.listWrapper}>
+          <div className={style.list}>{this.renderArtistList()}</div>
         </div>
       </div>
-    </div>
+    )
   }
 }

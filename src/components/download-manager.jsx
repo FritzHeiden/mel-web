@@ -11,7 +11,9 @@ class DownloadManager extends React.Component {
     super(props)
 
     this.state = {}
-    DownloadService.addOnDownloadListChangedListener(artists => this._onDownloadListChanged(artists))
+    DownloadService.addOnDownloadListChangedListener(artists =>
+      this._onDownloadListChanged(artists)
+    )
     this._gatherProps(props)
   }
 
@@ -46,27 +48,45 @@ class DownloadManager extends React.Component {
     let trackCount = 0
 
     for (let artist of this.state.artists) {
-      artistCount ++
-      for (let album of artist.albums){
-        albumCount ++
-        for (let track of album.tracks){
-          trackCount ++
+      artistCount++
+      for (let album of artist.albums) {
+        albumCount++
+        for (let track of album.tracks) {
+          trackCount++
         }
       }
     }
 
     console.log(artistCount, albumCount, trackCount)
 
-    return <div className={styles.wrapper + ' ' + styles.minimized}>
-      <div className={styles.text}>{`${artistCount} Artists, ${albumCount} Albums, ${trackCount} Tracks selected for download.`}</div>
-      <Button className={styles.button} icon={'fas fa-times'} label={'Discard'} onClick={() => DownloadService.deleteList()}/>
-      <Button className={styles.button} icon={'fas fa-list-ul'} label={'Open List'}/>
-      <Button className={styles.button} icon={'fas fa-download'} label={'Download'} accent={true}/>
-    </div>
+    return (
+      <div className={styles.wrapper + ' ' + styles.minimized}>
+        <div
+          className={styles.text}
+        >{`${artistCount} Artists, ${albumCount} Albums, ${trackCount} Tracks selected for download.`}</div>
+        <Button
+          className={styles.button}
+          icon={'fas fa-times'}
+          label={'Discard'}
+          onClick={() => DownloadService.deleteList()}
+        />
+        <Button
+          className={styles.button}
+          icon={'fas fa-list-ul'}
+          label={'Open List'}
+        />
+        <Button
+          className={styles.button}
+          icon={'fas fa-download'}
+          label={'Download'}
+          accent
+        />
+      </div>
+    )
   }
 
   _renderHidden () {
-    return <div className={styles.wrapper + ' ' + styles.hidden}/>
+    return <div className={styles.wrapper + ' ' + styles.hidden} />
   }
 }
 

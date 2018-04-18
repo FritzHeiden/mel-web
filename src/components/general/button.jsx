@@ -13,7 +13,11 @@ export default class Button extends React.Component {
     this.setState(this.state)
   }
 
-  _handleClick () { if (!this.props.disabled && this.props.onClick) { this.props.onClick() } }
+  _handleClick () {
+    if (!this.props.disabled && this.props.onClick) {
+      this.props.onClick()
+    }
+  }
 
   render () {
     let buttonStyle = style.button + ' ' + this.props.className
@@ -32,16 +36,29 @@ export default class Button extends React.Component {
         buttonStyle += style.genericDisabled
       }
     }
-    return <div onClick={() => this._handleClick()}
-                className={buttonStyle}>{this._renderIcon()}{this._renderSpacer()}{this.state.label}</div>
+    return (
+      <div onClick={() => this._handleClick()} className={buttonStyle}>
+        {this._renderIcon()}
+        {this._renderSpacer()}
+        {this.state.label}
+      </div>
+    )
   }
 
-  _renderIcon () { if (this.props.icon) { return <i className={this.props.icon}/> } }
+  _renderIcon () {
+    if (this.props.icon) {
+      return <i className={this.props.icon} />
+    }
+  }
 
   _renderSpacer () {
-    if (this.props.icon && this.props.icon !== '' && this.props.label && this.props.label !== '') {
-      return <div className={style.spacer}/>
+    if (
+      this.props.icon &&
+      this.props.icon !== '' &&
+      this.props.label &&
+      this.props.label !== ''
+    ) {
+      return <div className={style.spacer} />
     }
   }
 }
-
