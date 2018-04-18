@@ -14,13 +14,17 @@ export default class NodeFileSystem extends FileSystem {
 
   readFile (filePath) {
     return new Promise((resolve, reject) => {
-      fs.readFile(path.resolve(filePath), {encoding: 'utf-8'}, (err, data) => {
-        if (err) {
-          reject(err)
-          return
+      fs.readFile(
+        path.resolve(filePath),
+        { encoding: 'utf-8' },
+        (err, data) => {
+          if (err) {
+            reject(err)
+            return
+          }
+          resolve(data)
         }
-        resolve(data)
-      })
+      )
     })
   }
 
@@ -67,7 +71,10 @@ export default class NodeFileSystem extends FileSystem {
           return
         }
 
-        resolve({isDirectory: stats.isDirectory(), lastModified: stats.mtime.getTime() })
+        resolve({
+          isDirectory: stats.isDirectory(),
+          lastModified: stats.mtime.getTime()
+        })
       })
     })
   }

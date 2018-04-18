@@ -1,58 +1,47 @@
-var path = require('path')
-var fs = require('fs')
+const path = require('path')
+const fs = require('fs')
 
-var nodeModules = {}
-fs.readdirSync('node_modules')
-  .filter(function (x) {
-    return ['.bin'].indexOf(x) === -1
-  })
-  .forEach(function (mod) {
-    nodeModules[mod] = 'commonjs ' + mod
-  })
+const DIST_DIR = path.join(__dirname, 'dist')
+const SRC_DIR = path.join(__dirname, 'src')
+const MODULES_DIR = path.join(__dirname, 'node_modules')
+const MEL_WEB_DIR = fs.realpathSync(
+  path.join(MODULES_DIR, 'mel-core/dist/mel-web')
+)
 
-var DIST_DIR = path.join(__dirname, 'dist')
-var CLIENT_DIR = path.join(__dirname, 'src')
+let nodeModules = {}
+fs
+  .readdirSync(path.resolve(__dirname, 'node_modules'))
+  .filter(x => ['.bin'].indexOf(x) === -1)
+  .forEach(mod => {
+    nodeModules[mod] = `commonjs ${mod}`
+  })
 
 module.exports = {
-  context: CLIENT_DIR,
-  entry: {
-    path: path.join(CLIENT_DIR, './core.js')
-  },
+  mode: 'development',
+  entry: ['babel-polyfill', path.join(SRC_DIR, './core.js')],
   output: {
-    filename: './mel-server.js',
+    filename: 'mel-server.js',
     path: DIST_DIR
   },
-  resolve: {
-    extensions: ['.js'],
-    alias: {
-      src: path.resolve(__dirname, 'src')
-    }
-  },
-  devtool: 'source-map',
+  target: 'node',
   module: {
     rules: [
       {
-        test: /\.js$|\.jsx$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader'
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/
       },
       {
-        test: /\.js$|\.jsx$/,
-        use: [{loader: 'source-map-loader'}],
-        enforce: 'pre'
-      },
-      {
-        test: /\.html$/,
-        exclude: /node_modules/,
-        use: {loader: 'raw-loader'}
+        test: /.+/,
+        loader: 'file-loader',
+        include: MEL_WEB_DIR,
+        options: {
+          name: '[path][name].[ext]',
+          outputPath: 'mel-web',
+          context: MEL_WEB_DIR
+        }
       }
     ]
   },
-  target: 'node',
   externals: nodeModules
-  // plugins: [
-  //     new webpack.DefinePlugin({
-  //         'process.env.NODE_ENV': JSON.stringify('development')
-  //     })
-  // ]
 }

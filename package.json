@@ -1,31 +1,31 @@
 {
   "name": "mel-server",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "main": "./src/core.js",
-  "author": "Fritz Heiden",
+  "author": "Fritz Heiden <fritz.heiden@mailbox.org>",
   "license": "MIT",
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "start": "node ./dist/mel-server.js",
-    "dev": "yarn run build && yarn run start"
+    "build-start": "npm run build && npm run start",
+    "format": "prettier-standard src/**/*.js src/*.js"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
+    "babel-loader": "^7.1.4",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
-    "raw-loader": "^0.5.1",
-    "source-map-loader": "^0.2.3",
-    "standard": "^10.0.3",
-    "webpack": "^3.8.1",
-    "webpack-link": "^0.2.0"
+    "file-loader": "^1.1.11",
+    "prettier-standard": "^8.0.1",
+    "standard": "^11.0.1",
+    "webpack": "^4.5.0",
+    "webpack-cli": "^2.0.14"
   },
   "dependencies": {
-    "express": "^4.16.2",
-    "http": "^0.0.0",
+    "express": "^4.16.3",
     "mel-core": "git+https://github.com/fritzendgltig/mel-core",
     "nedb": "^1.8.0",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.1.0"
   }
 }

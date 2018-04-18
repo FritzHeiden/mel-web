@@ -1,8 +1,13 @@
+import 'babel-polyfill'
 import { MelCore } from 'mel-core'
-import ExpressWebServer from 'src/web/express-web-server'
-import NodeFileSystem from 'src/file-system/node-file-system'
-import NedbDatabase from 'src/database/nedb-database'
-import SocketIoWebSocket from 'src/network/socket-io-web-socket'
+
+import ExpressWebServer from './web/express-web-server'
+import NodeFileSystem from './file-system/node-file-system'
+import NedbDatabase from './database/nedb-database'
+import SocketIoWebSocket from './network/socket-io-web-socket'
+
+// Dependency for web app
+require.context('mel-core/dist/mel-web', true, /.+/)
 
 export class MelServer {
   async start () {

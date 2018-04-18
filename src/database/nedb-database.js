@@ -16,21 +16,41 @@ export default class NedbDatabase extends Database {
   }
 
   async _loadDatabase () {
-    this._db.artists = new Datastore({filename: `${this._databaseDirectory}/${DATABASE_DIRECTORY_NAME}/${ARTISTS_DB_FILENAME}`})
+    this._db.artists = new Datastore({
+      filename: `${
+        this._databaseDirectory
+      }/${DATABASE_DIRECTORY_NAME}/${ARTISTS_DB_FILENAME}`
+    })
     this._db.artists.loadDatabase()
-    this._db.albums = new Datastore({filename: `${this._databaseDirectory}/${DATABASE_DIRECTORY_NAME}/${ALBUMS_DB_FILENAME}`})
+    this._db.albums = new Datastore({
+      filename: `${
+        this._databaseDirectory
+      }/${DATABASE_DIRECTORY_NAME}/${ALBUMS_DB_FILENAME}`
+    })
     this._db.albums.loadDatabase()
-    this._db.tracks = new Datastore({filename: `${this._databaseDirectory}/${DATABASE_DIRECTORY_NAME}/${TRACKS_DB_FILENAME}`})
+    this._db.tracks = new Datastore({
+      filename: `${
+        this._databaseDirectory
+      }/${DATABASE_DIRECTORY_NAME}/${TRACKS_DB_FILENAME}`
+    })
     this._db.tracks.loadDatabase()
-    this._db.files = new Datastore({filename: `${this._databaseDirectory}/${DATABASE_DIRECTORY_NAME}/${FILES_DB_FILENAME}`})
+    this._db.files = new Datastore({
+      filename: `${
+        this._databaseDirectory
+      }/${DATABASE_DIRECTORY_NAME}/${FILES_DB_FILENAME}`
+    })
     this._db.files.loadDatabase()
-    this._db.databaseMetaData = new Datastore({filename: `${this._databaseDirectory}/${DATABASE_DIRECTORY_NAME}/${DB_META_FILENAME}`})
+    this._db.databaseMetaData = new Datastore({
+      filename: `${
+        this._databaseDirectory
+      }/${DATABASE_DIRECTORY_NAME}/${DB_META_FILENAME}`
+    })
     this._db.databaseMetaData.loadDatabase()
   }
 
   async _readDatabaseMetaData (key) {
     let databaseMetaData = this._db.databaseMetaData
-    databaseMetaData.findOne({key}, (err, value) => {
+    databaseMetaData.findOne({ key }, (err, value) => {
       if (err) {
         throw err
       } else {
@@ -41,13 +61,18 @@ export default class NedbDatabase extends Database {
 
   async _updateDatabaseMetaData (key, value) {
     let databaseMetaData = this._db.databaseMetaData
-    databaseMetaData.update({key}, {key, value}, {upsert: true}, (err, newData) => {
-      if (err) {
-        throw err
-      } else {
-        return newData
+    databaseMetaData.update(
+      { key },
+      { key, value },
+      { upsert: true },
+      (err, newData) => {
+        if (err) {
+          throw err
+        } else {
+          return newData
+        }
       }
-    })
+    )
   }
 
   async _createFile (file) {
@@ -66,7 +91,7 @@ export default class NedbDatabase extends Database {
   async _readFile (filePath) {
     return new Promise((resolve, reject) => {
       let files = this._db.files
-      files.findOne({path: filePath}, (err, file) => {
+      files.findOne({ path: filePath }, (err, file) => {
         if (err) {
           reject(err)
         } else {
@@ -79,7 +104,7 @@ export default class NedbDatabase extends Database {
   async _updateFile (file) {
     return new Promise((resolve, reject) => {
       let files = this._db.files
-      files.update({path: file.path}, file, (err, newDoc) => {
+      files.update({ path: file.path }, file, (err, newDoc) => {
         if (err) {
           reject(err)
         } else {
@@ -105,7 +130,7 @@ export default class NedbDatabase extends Database {
   async _readTrack (trackId) {
     return new Promise((resolve, reject) => {
       let tracks = this._db.tracks
-      tracks.findOne({'id': trackId}, (err, trackJson) => {
+      tracks.findOne({ id: trackId }, (err, trackJson) => {
         if (err) {
           reject(err)
         } else {
@@ -118,7 +143,7 @@ export default class NedbDatabase extends Database {
   async _updateTrack (trackJson) {
     return new Promise((resolve, reject) => {
       let tracks = this._db.tracks
-      tracks.update({id: trackJson.id}, trackJson, (err, docs) => {
+      tracks.update({ id: trackJson.id }, trackJson, (err, docs) => {
         if (err) {
           reject(err)
         }
@@ -143,7 +168,7 @@ export default class NedbDatabase extends Database {
   async _readAlbum (albumId) {
     return new Promise((resolve, reject) => {
       let albums = this._db.albums
-      albums.findOne({'id': albumId}, (err, album) => {
+      albums.findOne({ id: albumId }, (err, album) => {
         if (err) {
           reject(err)
         } else {
@@ -156,7 +181,7 @@ export default class NedbDatabase extends Database {
   async _updateAlbum (albumJson) {
     return new Promise((resolve, reject) => {
       let albums = this._db.albums
-      albums.update({id: albumJson.id}, albumJson, (err, docs) => {
+      albums.update({ id: albumJson.id }, albumJson, (err, docs) => {
         if (err) {
           reject(err)
         }
@@ -180,7 +205,7 @@ export default class NedbDatabase extends Database {
   async _readArtist (artistId) {
     return new Promise((resolve, reject) => {
       let artists = this._db.artists
-      artists.findOne({'id': artistId}, (error, artist) => {
+      artists.findOne({ id: artistId }, (error, artist) => {
         if (error) {
           reject(new Error(`Could not read artist ${artistId}:\n${error}`))
         }
@@ -192,9 +217,11 @@ export default class NedbDatabase extends Database {
   async _updateArtist (artistJson) {
     return new Promise((resolve, reject) => {
       let artists = this._db.artists
-      artists.update({id: artistJson.id}, artistJson, (error, docs) => {
+      artists.update({ id: artistJson.id }, artistJson, (error, docs) => {
         if (error) {
-          reject(new Error(`Could not update artist ${artistJson.id}:\n${error}`))
+          reject(
+            new Error(`Could not update artist ${artistJson.id}:\n${error}`)
+          )
         }
         resolve(docs)
       })

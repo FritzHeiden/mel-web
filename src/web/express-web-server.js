@@ -37,6 +37,11 @@ export default class ExpressWebServer extends WebServer {
     })
   }
 
+  _static (directoryPath) {
+    console.log('Serving static files from ' + directoryPath)
+    this._app.use(express.static(directoryPath))
+  }
+
   start () {
     return new Promise((resolve, reject) => {
       try {
