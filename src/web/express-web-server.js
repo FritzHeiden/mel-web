@@ -1,6 +1,8 @@
 import express from 'express'
 import http from 'http'
+import path from 'path'
 import { WebServer } from 'mel-core'
+import ExpressResponse from './express-response'
 
 export default class ExpressWebServer extends WebServer {
   constructor () {
@@ -8,43 +10,27 @@ export default class ExpressWebServer extends WebServer {
     this._app = express()
     this._server = http.createServer(this._app)
     this.port = 3541
+    this._servingDirectory = ''
   }
 
   _get (uri, callback) {
     this._app.get(uri, (request, response) => {
       response.set('Content-Type', 'text/plain')
-      callback(null, {
-        _status: 200,
-        set body (body) {
-          this._body = body
-        },
-        get body () {
-          return this._body
-        },
-        set status (status) {
-          this._status = status
-        },
-        get status () {
-          return this._status
-        },
-        setHeader (key, value) {
-          response.set(key, value)
-        },
-        send () {
-          response.status(this.status).send(this.body)
-        }
-      })
+      callback(null, new ExpressResponse(response))
     })
   }
 
   _static (directoryPath) {
-    console.log('Serving static files from ' + directoryPath)
-    this._app.use(express.static(directoryPath))
+    this._servingDirectory = directoryPath
+    this._app.use(express.static(directoryPath, { fallthrough: true }))
   }
 
   start () {
     return new Promise((resolve, reject) => {
       try {
+        this._app.get('*', (request, response) =>
+          response.sendFile(path.join(this._servingDirectory, 'index.html'))
+        )
         this._server.listen(this.port, resolve)
       } catch (e) {
         reject(e)
