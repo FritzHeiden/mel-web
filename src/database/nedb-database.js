@@ -101,6 +101,19 @@ export default class NedbDatabase extends Database {
     })
   }
 
+  async _readFilesByTrackId (trackId) {
+    return new Promise((resolve, reject) => {
+      let files = this._db.files
+      files.find({ trackId }, (err, file) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(file)
+        }
+      })
+    })
+  }
+
   async _updateFile (file) {
     return new Promise((resolve, reject) => {
       let files = this._db.files

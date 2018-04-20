@@ -1,4 +1,5 @@
 import { Response } from 'mel-core'
+import { Buffer } from 'buffer'
 
 export default class ExpressResponse extends Response {
   constructor (response) {
@@ -12,6 +13,10 @@ export default class ExpressResponse extends Response {
 
   sendFile (relativeFilePath) {
     this._response.status(this._status).sendFile(relativeFilePath)
+  }
+
+  sendBuffer (arrayBuffer) {
+    this._response.status(this._status).send(Buffer.from(arrayBuffer))
   }
 
   setHeader (field, value) {
