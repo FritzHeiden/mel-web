@@ -3,6 +3,7 @@ import http from 'http'
 import path from 'path'
 import { WebServer } from 'mel-core'
 import ExpressResponse from './express-response'
+import ExpressRequest from './express-request'
 
 export default class ExpressWebServer extends WebServer {
   constructor () {
@@ -13,10 +14,10 @@ export default class ExpressWebServer extends WebServer {
     this._servingDirectory = ''
   }
 
-  _get (uri, callback) {
+  _get (uri, handler) {
     this._app.get(uri, (request, response) => {
       response.set('Content-Type', 'text/plain')
-      callback(null, new ExpressResponse(response))
+      handler(new ExpressRequest(request), new ExpressResponse(response))
     })
   }
 
