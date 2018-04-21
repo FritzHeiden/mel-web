@@ -1,6 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Artist } from '../../../mel-core/dist/mel-core'
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import FontAwesome from '@fortawesome/fontawesome'
+import faUser from '@fortawesome/fontawesome-free-solid/faUser'
+import faDotCircle from '@fortawesome/fontawesome-free-solid/faDotCircle'
+import { Artist } from 'mel-core'
 import NavigationHistoryBar from '../components/navigation-history-bar'
 import styles from './artist-view.sass'
 
@@ -10,6 +14,7 @@ export default class ArtistView extends React.Component {
     this.state = {}
     this._gatherProps(props)
     this._loadArtist()
+    this.loadIcons()
   }
 
   componentWillReceiveProps (newProps) {
@@ -20,6 +25,11 @@ export default class ArtistView extends React.Component {
   _gatherProps (props) {
     this.state.melClientSocket = props.melClientSocket
     this.state.artist = new Artist(props.match.params.artistId)
+  }
+
+  loadIcons () {
+    FontAwesome.library.add(faUser)
+    FontAwesome.library.add(faDotCircle)
   }
 
   async _loadArtist () {
@@ -50,7 +60,7 @@ export default class ArtistView extends React.Component {
               {
                 name: this.state.artist.name,
                 url: `/artist/${this.state.artist.id}`,
-                icon: 'fas fa-user'
+                icon: faUser
               }
             ]}
           />
@@ -58,7 +68,7 @@ export default class ArtistView extends React.Component {
             <div className={styles.artistInfo}>
               <div className={styles.thumbWrapper}>
                 <div className={styles.placeholder}>
-                  <i className={'fas fa-user'} />
+                  <FontAwesomeIcon icon={faUser} />
                 </div>
                 <div className={styles.thumb} />
               </div>
@@ -91,7 +101,7 @@ export default class ArtistView extends React.Component {
       >
         <div className={styles.coverWrapper}>
           <div className={styles.placeholder}>
-            <i className={'fas fa-dot-circle'} />
+            <FontAwesomeIcon icon={faDotCircle}/>
           </div>
           {/* <div className={styles.cover} style={{backgroundImage: `url(${album.coverUrl})`}}/> */}
         </div>

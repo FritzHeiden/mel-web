@@ -1,4 +1,6 @@
 import React from 'react'
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+
 import style from './button.sass'
 
 export default class Button extends React.Component {
@@ -47,14 +49,13 @@ export default class Button extends React.Component {
 
   _renderIcon () {
     if (this.props.icon) {
-      return <i className={this.props.icon} />
+      return <FontAwesomeIcon icon={this.props.icon} />
     }
   }
 
   _renderSpacer () {
     if (
       this.props.icon &&
-      this.props.icon !== '' &&
       this.props.label &&
       this.props.label !== ''
     ) {

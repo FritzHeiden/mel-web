@@ -1,4 +1,9 @@
 import React from 'react'
+import FontAwesome from '@fortawesome/fontawesome'
+import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
+import faListUl from '@fortawesome/fontawesome-free-solid/faListUl'
+import faDownload from '@fortawesome/fontawesome-free-solid/faDownload'
+
 import styles from './download-manager.sass'
 import DownloadService from '../services/download-service'
 import Button from './general/button'
@@ -15,6 +20,7 @@ class DownloadManager extends React.Component {
       this._onDownloadListChanged(artists)
     )
     this._gatherProps(props)
+    this.loadIcons()
   }
 
   componentWillReceiveProps (newProps) {
@@ -23,6 +29,12 @@ class DownloadManager extends React.Component {
 
   _gatherProps (props) {
     this.state.state = props.state
+  }
+
+  loadIcons () {
+    FontAwesome.library.add(faTimes)
+    FontAwesome.library.add(faListUl)
+    FontAwesome.library.add(faDownload)
   }
 
   _onDownloadListChanged (artists) {
@@ -66,18 +78,18 @@ class DownloadManager extends React.Component {
         >{`${artistCount} Artists, ${albumCount} Albums, ${trackCount} Tracks selected for download.`}</div>
         <Button
           className={styles.button}
-          icon={'fas fa-times'}
+          icon={faTimes}
           label={'Discard'}
           onClick={() => DownloadService.deleteList()}
         />
         <Button
           className={styles.button}
-          icon={'fas fa-list-ul'}
+          icon={faListUl}
           label={'Open List'}
         />
         <Button
           className={styles.button}
-          icon={'fas fa-download'}
+          icon={faDownload}
           label={'Download'}
           accent
         />

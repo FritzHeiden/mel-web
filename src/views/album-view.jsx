@@ -1,6 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Album } from '../../../mel-core/dist/mel-core'
+import FontAwesome from '@fortawesome/fontawesome'
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faDotCircle from '@fortawesome/fontawesome-free-solid/faDotCircle'
+import faDownload from '@fortawesome/fontawesome-free-solid/faDownload'
+import faCheck from '@fortawesome/fontawesome-free-solid/faCheck'
+import faUser from '@fortawesome/fontawesome-free-solid/faUser'
+import { Album } from 'mel-core'
+
 import NavigationHistoryBar from '../components/navigation-history-bar'
 import styles from './album-view.sass'
 import DownloadService from '../services/download-service'
@@ -10,6 +17,7 @@ export default class AlbumView extends React.Component {
     super(props)
     this.state = {}
     this._gatherProps(props)
+    this.loadIcons()
     this._loadAlbum()
   }
 
@@ -21,6 +29,13 @@ export default class AlbumView extends React.Component {
   _gatherProps (props) {
     this.state.melClientSocket = props.melClientSocket
     this.state.albumId = props.match.params.albumId
+  }
+
+  loadIcons () {
+    FontAwesome.library.add(faDotCircle)
+    FontAwesome.library.add(faDownload)
+    FontAwesome.library.add(faCheck)
+    FontAwesome.library.add(faUser)
   }
 
   async _loadAlbum () {
@@ -94,12 +109,12 @@ export default class AlbumView extends React.Component {
               {
                 name: this.state.album.artist.name,
                 url: `/artist/${this.state.album.artist.id}`,
-                icon: 'fas fa-user'
+                icon: faUser
               },
               {
                 name: this.state.album.title,
                 url: `/album/${this.state.album.id}`,
-                icon: 'fas fa-dot-circle'
+                icon: faDotCircle
               }
             ]}
           />
@@ -107,7 +122,7 @@ export default class AlbumView extends React.Component {
             <div className={styles.albumInfo}>
               <div className={styles.coverWrapper}>
                 <div className={styles.placeholder}>
-                  <i className={'fas fa-dot-circle'} />
+                  <FontAwesomeIcon icon={faDotCircle}/>
                 </div>
                 <div className={styles.cover} />
               </div>
@@ -130,16 +145,16 @@ export default class AlbumView extends React.Component {
     let icon
     let text
     if (DownloadService.containsAlbum(this.state.album)) {
-      icon = 'fas fa-check'
+      icon = faCheck
       text = 'In Downloads List'
     } else {
-      icon = 'fas fa-download'
+      icon = faDownload
       text = 'Add to Downloads'
     }
     return (
       <div className={styles.download} onClick={() => this._addToDownloads()}>
         <div className={styles.icon}>
-          <i className={icon} />
+          <FontAwesomeIcon icon={icon} />
         </div>
         <div>{text}</div>
       </div>
@@ -179,36 +194,3 @@ export default class AlbumView extends React.Component {
     return elements
   }
 }
-
-/*
-
-    if (this.state.artist) {
-      return <div className={styles.wrapper}>
-        <NavigationHistoryBar locations={[
-          {name: 'Library', url: '/'},
-          {name: this.state.artist.name, url: `/artist/${this.state.artist.id}`, icon: 'fas fa-user'}
-        ]}/>
-        <div className={styles.artistWrapper}>
-          <div className={styles.artistInfo}>
-            <div className={styles.thumbWrapper}>
-              <div className={styles.placeholder}><i className={'fas fa-user'}/></div>
-              <div className={styles.thumb} />
-            </div>
-            <h1>{this.state.artist.name}</h1>
-          </div>
-          <div className={styles.musicWrapper}>
-            <h2>Albums</h2>
-            <div className={styles.albumsWrapper}>
-              {this._renderAlbumList(this.state.artist.albums)}
-            </div>
-            <h2>Appears on</h2>
-            <div className={styles.albumsWrapper}>
-              {this._renderAlbumList(this.state.artist.featureAlbums)}
-            </div>
-          </div>
-        </div>
-      </div>
-    } else {
-      return <div>Loading ...</div>
-    }
- */

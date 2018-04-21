@@ -1,5 +1,8 @@
 import React from 'react'
 import { Route, Link } from 'react-router-dom'
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import FontAwesome  from '@fortawesome/fontawesome'
+import faAngleRight from '@fortawesome/fontawesome-free-solid/faAngleRight'
 import style from './navigation-history-bar.sass'
 
 export default class NavigationHistoryBar extends React.Component {
@@ -19,6 +22,10 @@ export default class NavigationHistoryBar extends React.Component {
     this.state.locations = props.locations
   }
 
+  loadIcons () {
+    FontAwesome.library.add(faAngleRight)
+  }
+
   render () {
     if (this.state.locations) {
       return <div className={style.wrapper}>{this._renderLocations()}</div>
@@ -34,7 +41,7 @@ export default class NavigationHistoryBar extends React.Component {
       if (location.icon) {
         elements.push(
           <Link key={i} className={style.element} to={location.url}>
-            <i className={location.icon} />
+            <FontAwesomeIcon icon={location.icon} />
             <div>{location.name}</div>
           </Link>
         )
@@ -49,7 +56,7 @@ export default class NavigationHistoryBar extends React.Component {
       if (i + 1 !== this.state.locations.length) {
         elements.push(
           <div key={`splitter${i}`} className={style.splitter}>
-            <i className='fas fa-angle-right' />
+            <FontAwesomeIcon icon={faAngleRight} />
           </div>
         )
       }
