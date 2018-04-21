@@ -67,7 +67,7 @@ export default class NodeFileSystem extends FileSystem {
     return new Promise((resolve, reject) => {
       fs.stat(path, (err, stats) => {
         if (err) {
-          reject(err)
+          resolve(null)
           return
         }
 
