@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "express": "^4.16.3",
-    "mel-core": "git+https://github.com/fritzendgltig/mel-core",
+    "mel-core": "fritzendgltig/mel-core#develop",
     "nedb": "^1.8.0",
     "socket.io": "^2.1.0"
   }
