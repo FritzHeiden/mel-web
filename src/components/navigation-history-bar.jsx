@@ -1,7 +1,7 @@
 import React from 'react'
 import { Route, Link } from 'react-router-dom'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import FontAwesome  from '@fortawesome/fontawesome'
+import FontAwesome from '@fortawesome/fontawesome'
 import faAngleRight from '@fortawesome/fontawesome-free-solid/faAngleRight'
 import style from './navigation-history-bar.sass'
 

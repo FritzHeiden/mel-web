@@ -122,7 +122,7 @@ export default class AlbumView extends React.Component {
             <div className={styles.albumInfo}>
               <div className={styles.coverWrapper}>
                 <div className={styles.placeholder}>
-                  <FontAwesomeIcon icon={faDotCircle}/>
+                  <FontAwesomeIcon icon={faDotCircle} />
                 </div>
                 <div className={styles.cover} />
               </div>

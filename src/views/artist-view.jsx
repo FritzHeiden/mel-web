@@ -101,7 +101,7 @@ export default class ArtistView extends React.Component {
       >
         <div className={styles.coverWrapper}>
           <div className={styles.placeholder}>
-            <FontAwesomeIcon icon={faDotCircle}/>
+            <FontAwesomeIcon icon={faDotCircle} />
           </div>
           {/* <div className={styles.cover} style={{backgroundImage: `url(${album.coverUrl})`}}/> */}
         </div>

@@ -82,11 +82,7 @@ class DownloadManager extends React.Component {
           label={'Discard'}
           onClick={() => DownloadService.deleteList()}
         />
-        <Button
-          className={styles.button}
-          icon={faListUl}
-          label={'Open List'}
-        />
+        <Button className={styles.button} icon={faListUl} label={'Open List'} />
         <Button
           className={styles.button}
           icon={faDownload}
