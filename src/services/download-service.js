@@ -1,9 +1,10 @@
 import { Artist } from 'mel-core'
 
 class DownloadService {
-  constructor () {
+  constructor (melHttpService) {
     this._artists = []
     this._listeners = []
+    this._melHttpService = melHttpService
   }
 
   get artists () {
@@ -98,8 +99,33 @@ class DownloadService {
     this._artists = []
     this._listeners.forEach(listener => listener(this._artists))
   }
+
+  async startDownload () {
+    let tracks = []
+    this._artists.forEach(artist =>
+      artist.albums.forEach(album =>
+        album.tracks.forEach(track => tracks.push(track))
+      )
+    )
+
+    const buffers = {}
+    for (let track of tracks) {
+      console.log('Downloading', track.id, '...')
+      buffers[track.id] = await this._melHttpService.downloadTrack(track.id)
+    }
+    console.log(buffers)
+  }
 }
 
-let downloadService = new DownloadService()
+let downloadService = {
+  _instance: null,
+  initialize (melHttpService) {
+    this._instance = new DownloadService(melHttpService)
+  },
+  getInstance () {
+    console.log('GETTING DOWNLOAD SERVICE INSTANCE', this._instance)
+    return this._instance
+  }
+}
 
 export default downloadService

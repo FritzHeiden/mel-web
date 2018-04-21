@@ -16,6 +16,7 @@ export default class AlbumView extends React.Component {
   constructor (props) {
     super(props)
     this.state = {}
+    this.state.downloadService = DownloadService.getInstance()
     this._gatherProps(props)
     this.loadIcons()
     this._loadAlbum()
@@ -57,8 +58,10 @@ export default class AlbumView extends React.Component {
   }
 
   _addToDownloads () {
-    DownloadService.addAlbum(this.state.album)
-    console.log(DownloadService.artists)
+    const {downloadService} = this.state
+
+    downloadService.addAlbum(this.state.album)
+    console.log(downloadService.artists)
     this.setState(this.state)
   }
 
@@ -142,9 +145,11 @@ export default class AlbumView extends React.Component {
   }
 
   _renderDownloadButton () {
+    const {downloadService} = this.state
+
     let icon
     let text
-    if (DownloadService.containsAlbum(this.state.album)) {
+    if (downloadService.containsAlbum(this.state.album)) {
       icon = faCheck
       text = 'In Downloads List'
     } else {

@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter, Route } from 'react-router-dom'
-import { MelClientSocket } from 'mel-core'
+import { MelClientSocket, MelHttpService } from 'mel-core'
 
 import './html/index.html'
 import './res/fonts/Oswald/Oswald-Regular.ttf'
@@ -14,6 +14,9 @@ import ArtistView from './views/artist-view'
 import AlbumView from './views/album-view'
 import SocketIoWebSocket from './network/socket-io-web-socket'
 import DownloadManager from './components/download-manager'
+import DownloadService from './services/download-service'
+
+const PORT = 3541
 
 class WebApp extends React.Component {
   constructor () {
@@ -21,8 +24,10 @@ class WebApp extends React.Component {
     console.log('Initializing WebApp')
     this.state = {}
     this.state.melClientSocket = new MelClientSocket(
-      new SocketIoWebSocket('localhost', 3541)
+      new SocketIoWebSocket('localhost', PORT)
     )
+    this.state.melHttpSocket = new MelHttpService('localhost', PORT)
+    DownloadService.initialize(this.state.melHttpSocket)
   }
 
   render () {

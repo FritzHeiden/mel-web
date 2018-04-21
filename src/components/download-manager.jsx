@@ -16,7 +16,8 @@ class DownloadManager extends React.Component {
     super(props)
 
     this.state = {}
-    DownloadService.addOnDownloadListChangedListener(artists =>
+    this.state.downloadService = DownloadService.getInstance()
+    this.state.downloadService.addOnDownloadListChangedListener(artists =>
       this._onDownloadListChanged(artists)
     )
     this._gatherProps(props)
@@ -55,6 +56,8 @@ class DownloadManager extends React.Component {
   }
 
   _renderMinimized () {
+    const {downloadService} = this.state
+
     let artistCount = 0
     let albumCount = 0
     let trackCount = 0
@@ -80,7 +83,7 @@ class DownloadManager extends React.Component {
           className={styles.button}
           icon={faTimes}
           label={'Discard'}
-          onClick={() => DownloadService.deleteList()}
+          onClick={() => downloadService.deleteList()}
         />
         <Button className={styles.button} icon={faListUl} label={'Open List'} />
         <Button
@@ -88,6 +91,7 @@ class DownloadManager extends React.Component {
           icon={faDownload}
           label={'Download'}
           accent
+          onClick={() => downloadService.startDownload()}
         />
       </div>
     )
