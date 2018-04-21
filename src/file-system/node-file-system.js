@@ -19,7 +19,7 @@ export default class NodeFileSystem extends FileSystem {
         { encoding: 'utf-8' },
         (err, data) => {
           if (err) {
-            reject(err)
+            resolve(null)
             return
           }
           resolve(data)
