@@ -19,7 +19,7 @@
     "babel-preset-react": "^6.24.1",
     "css-loader": "^0.28.7",
     "file-loader": "^1.1.11",
-    "mel-core": "git+https://github.com/fritzendgltig/mel-core.git",
+    "mel-core": "fritzendgltig/mel-core#develop",
     "node-sass": "^4.7.2",
     "prettier-standard": "^8.0.1",
     "react": "^16.1.1",
