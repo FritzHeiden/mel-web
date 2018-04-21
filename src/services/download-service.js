@@ -1,4 +1,5 @@
 import { Artist } from 'mel-core'
+import JSZip from 'jszip'
 
 class DownloadService {
   constructor (melHttpService) {
@@ -101,19 +102,29 @@ class DownloadService {
   }
 
   async startDownload () {
-    let tracks = []
-    this._artists.forEach(artist =>
-      artist.albums.forEach(album =>
-        album.tracks.forEach(track => tracks.push(track))
-      )
-    )
-
-    const buffers = {}
-    for (let track of tracks) {
-      console.log('Downloading', track.id, '...')
-      buffers[track.id] = await this._melHttpService.downloadTrack(track.id)
+    const zip = new JSZip()
+    for (let artist of this._artists) {
+      const artistFolder = zip.folder(artist.name)
+      for (let album of artist.albums) {
+        let folderName = album.title
+        if (typeof album.year === 'number') {
+          folderName = `${album.year} - ${album.title}`
+        }
+        const albumFolder = artistFolder.folder(folderName)
+        for (let track of album.tracks) {
+          console.log('Downloading', track.id, '...')
+          const buffer = await this._melHttpService.downloadTrack(track.id)
+          let fileName = track.title + '.mp3'
+          if (typeof track.number === 'number') {
+            fileName =
+              `${track.number}`.padStart(2, '0') + ` - ${track.title}.mp3`
+          }
+          albumFolder.file(fileName, buffer)
+        }
+      }
     }
-    console.log(buffers)
+    const blob = await zip.generateAsync({ type: 'blob' })
+    location.href = URL.createObjectURL(blob)
   }
 }
 
@@ -123,7 +134,6 @@ let downloadService = {
     this._instance = new DownloadService(melHttpService)
   },
   getInstance () {
-    console.log('GETTING DOWNLOAD SERVICE INSTANCE', this._instance)
     return this._instance
   }
 }

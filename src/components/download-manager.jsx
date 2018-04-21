@@ -56,7 +56,7 @@ class DownloadManager extends React.Component {
   }
 
   _renderMinimized () {
-    const {downloadService} = this.state
+    const { downloadService } = this.state
 
     let artistCount = 0
     let albumCount = 0
@@ -71,8 +71,6 @@ class DownloadManager extends React.Component {
         }
       }
     }
-
-    console.log(artistCount, albumCount, trackCount)
 
     return (
       <div className={styles.wrapper + ' ' + styles.minimized}>

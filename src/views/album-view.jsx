@@ -58,10 +58,9 @@ export default class AlbumView extends React.Component {
   }
 
   _addToDownloads () {
-    const {downloadService} = this.state
+    const { downloadService } = this.state
 
     downloadService.addAlbum(this.state.album)
-    console.log(downloadService.artists)
     this.setState(this.state)
   }
 
@@ -145,7 +144,7 @@ export default class AlbumView extends React.Component {
   }
 
   _renderDownloadButton () {
-    const {downloadService} = this.state
+    const { downloadService } = this.state
 
     let icon
     let text
