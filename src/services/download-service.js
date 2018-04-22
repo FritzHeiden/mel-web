@@ -1,6 +1,7 @@
 import { Artist } from 'mel-core'
 import JSZip from 'jszip'
 import EventEmitter from '../tools/event-emitter'
+import Album from '../data/album'
 
 const DOWNLOAD_LIST_CHANGE = 'download_list_change'
 const TOTAL_SIZE_CHANGE = 'total_size_change'
@@ -49,7 +50,7 @@ class DownloadService {
   addArtist (newArtist) {
     let artist = this._artists.find(artist => artist.id === newArtist.id)
     if (!artist) {
-      this._artists.push(newArtist)
+      this._artists.push(artist)
     } else {
       newArtist.album.forEach(album => this.addAlbum(album))
     }
@@ -62,7 +63,9 @@ class DownloadService {
   addAlbum (newAlbum) {
     let artist = this._artists.find(artist => artist.id === newAlbum.artist.id)
     if (!artist) {
-      let artist = newAlbum.artist
+      // We only want our artist to have id and name
+      const { id, name } = newAlbum.artist
+      let artist = new Artist(id, name)
       artist.addAlbum(newAlbum)
       this._artists.push(artist)
     } else {
@@ -82,15 +85,19 @@ class DownloadService {
       artist => artist.id === newTrack.album.artist.id
     )
     if (!artist) {
-      let album = newTrack.album
+      const { id: albumId, title, year } = newTrack.album
+      let album = new Album(albumId, null, title, year)
       album.addTrack(newTrack)
-      let artist = album.artist
+
+      const { id: artistId, name } = newTrack.album.artist
+      let artist = new Artist(artistId, name)
       artist.addAlbums(album)
       this._artists.push(artist)
     } else {
       let album = artist.albums.find(album => album.id === newTrack.album.id)
       if (!album) {
-        let album = newTrack.album
+        const { id, title, year } = newTrack.album
+        let album = new Album(id, null, title, year)
         album.addTrack(newTrack)
         artist.addAlbum(album)
       } else {
@@ -128,30 +135,39 @@ class DownloadService {
   deleteList () {
     this._artists = []
     this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
+    this._totalSize = 0
+    this._currentTrack = null
+    this._trackSizes = {}
+    this._state = PENDING
+    this._totalLoaded = 0
   }
 
   async startDownload () {
     this._setState(DOWNLOADING)
     const zip = new JSZip()
+    console.log('ARTISTS', this._artists)
     for (let artist of this._artists) {
-      const artistFolder = zip.folder(artist.name)
+      let artistFolder = zip.folder(artist.name)
+
       for (let album of artist.albums) {
         let folderName = album.title
         if (typeof album.year === 'number') {
           folderName = `${album.year} - ${album.title}`
         }
-        const albumFolder = artistFolder.folder(folderName)
+        let albumFolder = artistFolder.folder(folderName)
+
         for (let track of album.tracks) {
-          console.log('Downloading', track.id, '...')
           this._setCurrentTrack(track.id)
           const buffer = await this._melHttpService.downloadTrack(track.id)
           this._setCurrentTrack(null)
+
           let fileName = track.title + '.mp3'
           if (typeof track.number === 'number') {
             fileName =
               `${track.number}`.padStart(2, '0') + ` - ${track.title}.mp3`
           }
           albumFolder.file(fileName, buffer)
+          console.log(zip)
         }
       }
     }
