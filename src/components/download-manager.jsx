@@ -16,16 +16,28 @@ class DownloadManager extends React.Component {
     super(props)
 
     this.state = {}
-    this.state.downloadService = DownloadService.getInstance()
-    this.state.downloadService.addOnDownloadListChangedListener(artists =>{
+    const downloadService = DownloadService.getInstance()
+    downloadService.addOnDownloadListChangedListener(artists => {
       this.state.artists = artists
       this.setState(this.state)
-      }
-    )
-    this.state.downloadService.addOnTotalSizeChangedListener(totalSize => {
+    })
+    downloadService.addOnTotalSizeChangedListener(totalSize => {
       this.state.totalSize = totalSize
       this.setState(this.state)
     })
+    downloadService.addOnStateChangedListener(state => {
+      this.state.downloadState = state
+      this.setState(this.state)
+    })
+    downloadService.addOnCurrentTrackChangedListener(track => {
+      if (track) {
+        this.state.currentTrack = track
+        this.setState(this.state)
+      }
+    })
+    this.state.downloadService = downloadService
+    this.state.downloadState = downloadService.getState()
+    this.state.totalSize = downloadService.getTotalSize()
     this._gatherProps(props)
     this.loadIcons()
   }
@@ -44,8 +56,7 @@ class DownloadManager extends React.Component {
     FontAwesome.library.add(faDownload)
   }
 
-  _onDownloadListChanged (artists) {
-  }
+  _onDownloadListChanged (artists) {}
 
   render () {
     if (!this.state.artists || this.state.artists.length === 0) {
@@ -60,30 +71,28 @@ class DownloadManager extends React.Component {
   }
 
   _renderMinimized () {
-    const { downloadService, totalSize } = this.state
+    const { downloadService, totalSize, downloadState } = this.state
 
-    let artistCount = 0
-    let albumCount = 0
-    let trackCount = 0
+    let text = ''
 
-    for (let artist of this.state.artists) {
-      artistCount++
-      for (let album of artist.albums) {
-        albumCount++
-        for (let track of album.tracks) {
-          trackCount++
-        }
-      }
+    switch (downloadState) {
+      case DownloadService.PENDING:
+        text = this.textPending()
+        break
+      case DownloadService.DOWNLOADING:
+        text = this.textDownloading()
+        break
+      case DownloadService.ZIPPING:
+        text = 'Compressing files ...'
+        break
+      case DownloadService.DONE:
+        text = 'Download successful!'
+        break
     }
 
     return (
       <div className={styles.wrapper + ' ' + styles.minimized}>
-        <div
-          className={styles.text}
-        >{`${artistCount} Artists, `+
-        `${albumCount} Albums, `+
-        `${trackCount} Tracks selected for download. `+
-        `(${this._formatSize(totalSize)})`}</div>
+        <div className={styles.text}>{text}</div>
         <Button
           className={styles.button}
           icon={faTimes}
@@ -100,6 +109,35 @@ class DownloadManager extends React.Component {
         />
       </div>
     )
+  }
+
+  textPending () {
+    const { totalSize } = this.state
+    let artistCount = 0
+    let albumCount = 0
+    let trackCount = 0
+
+    for (let artist of this.state.artists) {
+      artistCount++
+      for (let album of artist.albums) {
+        albumCount++
+        for (let track of album.tracks) {
+          trackCount++
+        }
+      }
+    }
+
+    return (
+      `${artistCount} Artists, ` +
+      `${albumCount} Albums, ` +
+      `${trackCount} Tracks selected for download. ` +
+      `(${this._formatSize(totalSize)})`
+    )
+  }
+
+  textDownloading () {
+    const { currentTrack } = this.state
+    return `Downloading ${currentTrack.title} ...`
   }
 
   _formatSize (size) {

@@ -4,6 +4,14 @@ import EventEmitter from '../tools/event-emitter'
 
 const DOWNLOAD_LIST_CHANGE = 'download_list_change'
 const TOTAL_SIZE_CHANGE = 'total_size_change'
+const TOTAL_LOADED_CHANGE = 'total_loaded_change'
+const CURRENT_TRACK_CHANGE = 'current_track_change'
+const STATE_CHANGE = 'state_change'
+
+const PENDING = 'pending'
+const DOWNLOADING = 'downloading'
+const ZIPPING = 'zipping'
+const DONE = 'done'
 
 class DownloadService {
   constructor (melHttpService) {
@@ -12,6 +20,10 @@ class DownloadService {
     this._eventEmitter = new EventEmitter()
     this._totalSize = 0
     this._trackSizes = {}
+    this._totalLoaded = 0
+    this._currentTrack = null
+    this._state = PENDING
+    this.addOnDownloadListChangedListener(() => this._setState(PENDING))
   }
 
   get artists () {
@@ -26,6 +38,14 @@ class DownloadService {
     this._eventEmitter.on(TOTAL_SIZE_CHANGE, listener)
   }
 
+  addOnCurrentTrackChangedListener (listener) {
+    this._eventEmitter.on(CURRENT_TRACK_CHANGE, listener)
+  }
+
+  addOnStateChangedListener (listener) {
+    this._eventEmitter.on(STATE_CHANGE, listener)
+  }
+
   addArtist (newArtist) {
     let artist = this._artists.find(artist => artist.id === newArtist.id)
     if (!artist) {
@@ -35,7 +55,8 @@ class DownloadService {
     }
     this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
     newArtist.albums.forEach(album =>
-      album.tracks.forEach(track => this._fetchTrackSize(track.id)))
+      album.tracks.forEach(track => this._fetchTrackSize(track.id))
+    )
   }
 
   addAlbum (newAlbum) {
@@ -110,6 +131,7 @@ class DownloadService {
   }
 
   async startDownload () {
+    this._setState(DOWNLOADING)
     const zip = new JSZip()
     for (let artist of this._artists) {
       const artistFolder = zip.folder(artist.name)
@@ -121,7 +143,9 @@ class DownloadService {
         const albumFolder = artistFolder.folder(folderName)
         for (let track of album.tracks) {
           console.log('Downloading', track.id, '...')
+          this._setCurrentTrack(track.id)
           const buffer = await this._melHttpService.downloadTrack(track.id)
+          this._setCurrentTrack(null)
           let fileName = track.title + '.mp3'
           if (typeof track.number === 'number') {
             fileName =
@@ -131,16 +155,43 @@ class DownloadService {
         }
       }
     }
+    this._setState(ZIPPING)
     const blob = await zip.generateAsync({ type: 'blob' })
     location.href = URL.createObjectURL(blob)
+    this._setState(DONE)
   }
 
-  async _fetchTrackSize(trackId) {
-    const {size} = await this._melHttpService.getTrackDataInfo(trackId)
+  async _fetchTrackSize (trackId) {
+    const { size } = await this._melHttpService.getTrackDataInfo(trackId)
     this._totalSize += size
     this._trackSizes[trackId] = size
     this._eventEmitter.invokeAll(TOTAL_SIZE_CHANGE, this._totalSize)
     return size
+  }
+
+  _setCurrentTrack (trackId) {
+    this._artists.forEach(artist =>
+      artist.albums.forEach(album => {
+        const track = album.tracks.find(track => track.id === trackId)
+        this._currentTrack = track
+        this._eventEmitter.invokeAll(CURRENT_TRACK_CHANGE, track)
+      })
+    )
+  }
+
+  getCurrentTrack () {
+    return this._currentTrack
+  }
+
+  _setState (state) {
+    if (state !== this._state) {
+      this._state = state
+      this._eventEmitter.invokeAll(STATE_CHANGE, this._state)
+    }
+  }
+
+  getState () {
+    return this._state
   }
 
   getTrackSize (trackId) {
@@ -154,6 +205,10 @@ class DownloadService {
 
 let downloadService = {
   _instance: null,
+  PENDING,
+  DOWNLOADING,
+  ZIPPING,
+  DONE,
   initialize (melHttpService) {
     this._instance = new DownloadService(melHttpService)
   },

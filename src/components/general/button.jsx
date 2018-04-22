@@ -54,11 +54,7 @@ export default class Button extends React.Component {
   }
 
   _renderSpacer () {
-    if (
-      this.props.icon &&
-      this.props.label &&
-      this.props.label !== ''
-    ) {
+    if (this.props.icon && this.props.label && this.props.label !== '') {
       return <div className={style.spacer} />
     }
   }
