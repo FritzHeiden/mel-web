@@ -51,12 +51,34 @@ export default class NodeFileSystem extends FileSystem {
     })
   }
 
+  async makeDirectory (directoryPath) {
+    return new Promise((resolve, reject) => {
+      fs.mkdir(directoryPath, error => {
+        if (error) {
+          reject(error)
+        }
+        resolve()
+      })
+    })
+  }
+
   writeFile (filePath, data) {
     return new Promise((resolve, reject) => {
       fs.writeFile(filePath, data, err => {
         if (err) {
           reject(err)
           return
+        }
+        resolve()
+      })
+    })
+  }
+
+  async writeBinaryFile (filePath, data) {
+    return new Promise((resolve, reject) => {
+      fs.writeFile(filePath, data, { encoding: 'binary' }, err => {
+        if (err) {
+          reject(err)
         }
         resolve()
       })
