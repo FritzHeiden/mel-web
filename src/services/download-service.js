@@ -3,13 +3,15 @@ import JSZip from 'jszip'
 import EventEmitter from '../tools/event-emitter'
 
 const DOWNLOAD_LIST_CHANGE = 'download_list_change'
+const TOTAL_SIZE_CHANGE = 'total_size_change'
 
 class DownloadService {
   constructor (melHttpService) {
     this._artists = []
-    this._listeners = []
     this._melHttpService = melHttpService
     this._eventEmitter = new EventEmitter()
+    this._totalSize = 0
+    this._trackSizes = {}
   }
 
   get artists () {
@@ -20,6 +22,10 @@ class DownloadService {
     this._eventEmitter.on(DOWNLOAD_LIST_CHANGE, listener)
   }
 
+  addOnTotalSizeChangedListener (listener) {
+    this._eventEmitter.on(TOTAL_SIZE_CHANGE, listener)
+  }
+
   addArtist (newArtist) {
     let artist = this._artists.find(artist => artist.id === newArtist.id)
     if (!artist) {
@@ -28,6 +34,8 @@ class DownloadService {
       newArtist.album.forEach(album => this.addAlbum(album))
     }
     this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
+    newArtist.albums.forEach(album =>
+      album.tracks.forEach(track => this._fetchTrackSize(track.id)))
   }
 
   addAlbum (newAlbum) {
@@ -45,6 +53,7 @@ class DownloadService {
       }
     }
     this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
+    newAlbum.tracks.forEach(track => this._fetchTrackSize(track.id))
   }
 
   addTrack (newTrack) {
@@ -71,6 +80,7 @@ class DownloadService {
       }
     }
     this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
+    this._fetchTrackSize(newTrack.id)
   }
 
   containsAlbum (needleAlbum) {
@@ -123,6 +133,22 @@ class DownloadService {
     }
     const blob = await zip.generateAsync({ type: 'blob' })
     location.href = URL.createObjectURL(blob)
+  }
+
+  async _fetchTrackSize(trackId) {
+    const {size} = await this._melHttpService.getTrackDataInfo(trackId)
+    this._totalSize += size
+    this._trackSizes[trackId] = size
+    this._eventEmitter.invokeAll(TOTAL_SIZE_CHANGE, this._totalSize)
+    return size
+  }
+
+  getTrackSize (trackId) {
+    return this._trackSizes[trackId]
+  }
+
+  getTotalSize () {
+    return this._totalSize
   }
 }
 
