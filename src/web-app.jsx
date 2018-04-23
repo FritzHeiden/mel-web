@@ -26,12 +26,12 @@ class WebApp extends React.Component {
     this.state.melClientSocket = new MelClientSocket(
       new SocketIoWebSocket('localhost', PORT)
     )
-    this.state.melHttpSocket = new MelHttpService('localhost', PORT)
-    DownloadService.initialize(this.state.melHttpSocket)
+    this.state.melHttpService = new MelHttpService('localhost', PORT)
+    DownloadService.initialize(this.state.melHttpService)
   }
 
   render () {
-    const { melClientSocket } = this.state
+    const { melClientSocket, melHttpService } = this.state
     const { MINIMIZED } = DownloadManager
     const { wrapper, content } = styles
 
@@ -48,7 +48,11 @@ class WebApp extends React.Component {
           <Route
             path='/artist/:artistId'
             render={props => (
-              <ArtistView {...props} melClientSocket={melClientSocket} />
+              <ArtistView
+                {...props}
+                melClientSocket={melClientSocket}
+                melHttpService={melHttpService}
+              />
             )}
           />
           <Route

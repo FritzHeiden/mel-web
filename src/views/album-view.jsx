@@ -11,6 +11,7 @@ import { Album } from 'mel-core'
 import NavigationHistoryBar from '../components/navigation-history-bar'
 import styles from './album-view.sass'
 import DownloadService from '../services/download-service'
+import AlbumCover from '../components/album-cover'
 
 export default class AlbumView extends React.Component {
   constructor (props) {
@@ -102,20 +103,21 @@ export default class AlbumView extends React.Component {
   }
 
   render () {
-    if (this.state.album) {
+    const { album } = this.state
+    if (album) {
       return (
         <div className={styles.wrapper}>
           <NavigationHistoryBar
             locations={[
               { name: 'Library', url: '/' },
               {
-                name: this.state.album.artist.name,
-                url: `/artist/${this.state.album.artist.id}`,
+                name: album.artist.name,
+                url: `/artist/${album.artist.id}`,
                 icon: faUser
               },
               {
-                name: this.state.album.title,
-                url: `/album/${this.state.album.id}`,
+                name: album.title,
+                url: `/album/${album.id}`,
                 icon: faDotCircle
               }
             ]}
@@ -123,10 +125,7 @@ export default class AlbumView extends React.Component {
           <div className={styles.albumWrapper}>
             <div className={styles.albumInfo}>
               <div className={styles.coverWrapper}>
-                <div className={styles.placeholder}>
-                  <FontAwesomeIcon icon={faDotCircle} />
-                </div>
-                <div className={styles.cover} />
+                <AlbumCover albumId={album.id} className={styles.cover} />
               </div>
               <h1 className={styles.albumTitle}>{this.state.album.title}</h1>
               {this._renderDownloadButton()}

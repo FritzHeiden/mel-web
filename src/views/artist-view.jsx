@@ -7,6 +7,7 @@ import faDotCircle from '@fortawesome/fontawesome-free-solid/faDotCircle'
 import { Artist } from 'mel-core'
 import NavigationHistoryBar from '../components/navigation-history-bar'
 import styles from './artist-view.sass'
+import AlbumCover from '../components/album-cover'
 
 export default class ArtistView extends React.Component {
   constructor (props) {
@@ -24,6 +25,7 @@ export default class ArtistView extends React.Component {
 
   _gatherProps (props) {
     this.state.melClientSocket = props.melClientSocket
+    this.state.melHttpService = props.melHttpService
     this.state.artist = new Artist(props.match.params.artistId)
   }
 
@@ -93,6 +95,7 @@ export default class ArtistView extends React.Component {
   }
 
   _renderAlbumList (albums) {
+    const { melHttpService } = this.state
     return albums.sort((a, b) => b.year - a.year).map(album => (
       <Link
         key={album.id}
@@ -100,9 +103,11 @@ export default class ArtistView extends React.Component {
         to={{ pathname: '/album/' + album.id }}
       >
         <div className={styles.coverWrapper}>
-          <div className={styles.placeholder}>
-            <FontAwesomeIcon icon={faDotCircle} />
-          </div>
+          <AlbumCover
+            className={styles.cover}
+            albumId={album.id}
+            melHttpService={melHttpService}
+          />
           {/* <div className={styles.cover} style={{backgroundImage: `url(${album.coverUrl})`}}/> */}
         </div>
         <div className={styles.title}>{album.title}</div>
