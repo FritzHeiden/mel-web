@@ -52,6 +52,12 @@ export default class NodeFileSystem extends FileSystem {
   }
 
   async makeDirectory (directoryPath) {
+    let directory = directoryPath.split('/')
+    directory.pop()
+    let parentDirectoryPath = directory.join('/')
+    if (!(await this.stats(parentDirectoryPath))) {
+      await this.makeDirectory(parentDirectoryPath)
+    }
     return new Promise((resolve, reject) => {
       fs.mkdir(directoryPath, error => {
         if (error) {
