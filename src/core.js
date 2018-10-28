@@ -6,8 +6,8 @@ import NodeFileSystem from './file-system/node-file-system'
 import NedbDatabase from './database/nedb-database'
 import SocketIoWebSocket from './network/socket-io-web-socket'
 
-// Dependency for web app
-require.context('mel-core/dist/mel-web', true, /.+/)
+const RELATIVE_CONFIG_PATH = '/config.json'
+const RELATIVE_MEL_WEB_PATH = '/www'
 
 export class MelServer {
   async start () {
@@ -18,7 +18,10 @@ export class MelServer {
     this._melCore.webServer = expressWebServer
     this._melCore.database = new NedbDatabase(fileSystem.APPLICATION_DIRECTORY)
     this._melCore.webSocket = new SocketIoWebSocket(expressWebServer.server)
-    await this._melCore.initialize()
+    await this._melCore.initialize({
+      configPath: fileSystem.APPLICATION_DIRECTORY + RELATIVE_CONFIG_PATH,
+      melWebPath: fileSystem.APPLICATION_DIRECTORY + RELATIVE_MEL_WEB_PATH
+    })
   }
 
   async refreshFiles () {
