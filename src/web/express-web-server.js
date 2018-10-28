@@ -2,6 +2,8 @@ import express from 'express'
 import http from 'http'
 import path from 'path'
 import { WebServer } from 'mel-core'
+import fs from 'fs'
+
 import ExpressResponse from './express-response'
 import ExpressRequest from './express-request'
 
@@ -23,7 +25,24 @@ export default class ExpressWebServer extends WebServer {
 
   _static (directoryPath) {
     this._servingDirectory = directoryPath
-    this._app.use(express.static(directoryPath, { fallthrough: true }))
+    let webRoot = this.getWebRoot()
+    if (!webRoot.endsWith('/')) webRoot += '(/|$)'
+    let regex = '^' + webRoot
+    regex = new RegExp(regex)
+    this._app.get(regex, async (request, response) => {
+      let filePath = request.path.replace(regex, '')
+      if (!filePath.startsWith('/')) filePath = '/' + filePath
+      let absolutePath = directoryPath + filePath
+      console.log('SERVING', absolutePath)
+      console.log(regex.toString())
+      if (
+        await new Promise(resolve => fs.stat(absolutePath, err => resolve(err)))
+      ) {
+        response.sendFile(directoryPath)
+      } else {
+        response.sendFile(absolutePath)
+      }
+    })
   }
 
   start () {
