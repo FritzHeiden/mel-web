@@ -16,19 +16,25 @@ import SocketIoWebSocket from './network/socket-io-web-socket'
 import DownloadManager from './components/download-manager'
 import DownloadService from './services/download-service'
 
-const PORT = 3541
-const WEB_ROOT = document.getElementsByTagName('base')[0].href.replace(new RegExp('^' + location.origin), '')
+const PORT = location.port
+const WEB_ROOT = (() => {
+  let href = document.getElementsByTagName('base')[0].href
+  href = href.replace(new RegExp('^' + location.origin), '')
+  if (!href.endsWith('/')) href += '/'
+  return href
+})()
 
 class WebApp extends React.Component {
   constructor () {
     super()
-    console.log(WEB_ROOT)
     console.log('Initializing WebApp')
     this.state = {}
     this.state.melClientSocket = new MelClientSocket(
-      new SocketIoWebSocket('localhost', PORT)
+      new SocketIoWebSocket(location.hostname, PORT, { webRoot: WEB_ROOT })
     )
-    this.state.melHttpService = new MelHttpService('localhost', PORT)
+    this.state.melHttpService = new MelHttpService('localhost', PORT, {
+      webRoot: WEB_ROOT
+    })
     DownloadService.initialize(this.state.melHttpService)
   }
 
@@ -60,7 +66,11 @@ class WebApp extends React.Component {
           <Route
             path='/album/:albumId'
             render={props => (
-              <AlbumView {...props} melClientSocket={melClientSocket} />
+              <AlbumView
+                {...props}
+                melClientSocket={melClientSocket}
+                melHttpService={melHttpService}
+              />
             )}
           />
           <DownloadManager state={MINIMIZED} />

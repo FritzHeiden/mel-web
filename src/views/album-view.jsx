@@ -125,7 +125,11 @@ export default class AlbumView extends React.Component {
           <div className={styles.albumWrapper}>
             <div className={styles.albumInfo}>
               <div className={styles.coverWrapper}>
-                <AlbumCover albumId={album.id} className={styles.cover} />
+                <AlbumCover
+                  albumId={album.id}
+                  className={styles.cover}
+                  melHttpService={this.props.melHttpService}
+                />
               </div>
               <h1 className={styles.albumTitle}>{this.state.album.title}</h1>
               {this._renderDownloadButton()}

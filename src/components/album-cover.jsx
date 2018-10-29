@@ -37,7 +37,7 @@ export default class AlbumCover extends React.Component {
 
   render () {
     const { albumId, className } = this.state
-    const albumUrl = `http://localhost:3541/api/albums/${albumId}/cover`
+    const albumUrl = this.props.melHttpService.getAlbumCoverUrl(albumId)
     if (albumId) {
       return (
         <div
