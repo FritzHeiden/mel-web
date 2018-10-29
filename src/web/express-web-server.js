@@ -12,29 +12,26 @@ export default class ExpressWebServer extends WebServer {
     super()
     this._app = express()
     this._server = http.createServer(this._app)
-    this.port = 3541
     this._servingDirectory = ''
   }
 
   _get (uri, handler) {
     this._app.get(uri, (request, response) => {
-      response.set('Content-Type', 'text/plain')
       handler(new ExpressRequest(request), new ExpressResponse(response))
     })
   }
 
-  _static (directoryPath) {
+  _static (directoryPath, headers) {
     this._servingDirectory = directoryPath
-    let webRoot = this.getWebRoot()
-    if (!webRoot.endsWith('/')) webRoot += '(/|$)'
-    let regex = '^' + webRoot
-    regex = new RegExp(regex)
+    let regex = this._makeWebRootRegExp()
     this._app.get(regex, async (request, response) => {
+      Object.keys(headers).forEach(header =>
+        response.set(header, headers[header])
+      )
+
       let filePath = request.path.replace(regex, '')
       if (!filePath.startsWith('/')) filePath = '/' + filePath
       let absolutePath = directoryPath + filePath
-      console.log('SERVING', absolutePath)
-      console.log(regex.toString())
       if (
         await new Promise(resolve => fs.stat(absolutePath, err => resolve(err)))
       ) {
@@ -45,25 +42,24 @@ export default class ExpressWebServer extends WebServer {
     })
   }
 
+  _makeWebRootRegExp () {
+    let webRoot = this.getWebRoot()
+    if (webRoot.endsWith('/')) webRoot = webRoot.substr(0, webRoot.length - 1)
+    let regex = '^' + webRoot + '(/|$)(?!api)'
+    return new RegExp(regex)
+  }
+
   start () {
     return new Promise((resolve, reject) => {
       try {
         this._app.get('*', (request, response) =>
           response.sendFile(path.join(this._servingDirectory, 'index.html'))
         )
-        this._server.listen(this.port, resolve)
+        this._server.listen(this._port, resolve)
       } catch (e) {
         reject(e)
       }
     })
-  }
-
-  get port () {
-    return this._port
-  }
-
-  set port (port) {
-    this._port = port
   }
 
   get server () {

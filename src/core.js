@@ -28,8 +28,8 @@ export class MelServer {
     await this._melCore.refreshFiles()
   }
 
-  get port () {
-    return this._melCore.webServer.port
+  getPort () {
+    return this._melCore.webServer.getPort()
   }
 }
 
@@ -37,7 +37,7 @@ let main = async () => {
   const melServer = new MelServer()
   await melServer.start()
 
-  console.log(`MelServer started at port ${melServer.port}`)
+  console.log(`MelServer started at port ${melServer.getPort()}`)
   await melServer.refreshFiles()
 }
 
