@@ -17,10 +17,12 @@ import DownloadManager from './components/download-manager'
 import DownloadService from './services/download-service'
 
 const PORT = 3541
+const WEB_ROOT = document.getElementsByTagName('base')[0].href.replace(new RegExp('^' + location.origin), '')
 
 class WebApp extends React.Component {
   constructor () {
     super()
+    console.log(WEB_ROOT)
     console.log('Initializing WebApp')
     this.state = {}
     this.state.melClientSocket = new MelClientSocket(
@@ -69,7 +71,7 @@ class WebApp extends React.Component {
 }
 
 ReactDOM.render(
-  <BrowserRouter>
+  <BrowserRouter basename={WEB_ROOT}>
     <WebApp />
   </BrowserRouter>,
   document.getElementById('root')
