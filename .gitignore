@@ -1,7 +1,6 @@
 .idea
-node_modules
 *.lock
-yarn-error.log
-package-lock.json
-
+node_modules
+*.log
+*.db
 dist
