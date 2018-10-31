@@ -8,9 +8,13 @@ export default class SocketIoWebSocket extends WebSocket {
     this._port = port
     this._webRoot = '/'
     if (webRoot) this._webRoot = webRoot
-    console.log('Making connection ...')
-    this._io = SocketClient(`http://${this._host}:${this._port}`, {
-      path: webRoot + 'socket'
+  }
+
+  connect () {
+    console.log('Connecting to server ...')
+    let protocol = location.protocol
+    this._io = SocketClient(`${protocol}//${this._host}:${this._port}`, {
+      path: this._webRoot + 'socket'
     })
   }
 

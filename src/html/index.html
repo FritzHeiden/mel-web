@@ -6,6 +6,7 @@
         request.open('GET', document.location, false);
         request.send(null);
         let base = request.getResponseHeader('Content-Base')
+        if (!base) base = '/'
         if (base[base.length - 1] !== '/') base += '/'
         document.writeln('<base href="' + base + '" />')
         console.log('BASE', base)

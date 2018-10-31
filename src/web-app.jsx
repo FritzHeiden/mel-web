@@ -29,9 +29,11 @@ class WebApp extends React.Component {
     super()
     console.log('Initializing WebApp')
     this.state = {}
-    this.state.melClientSocket = new MelClientSocket(
-      new SocketIoWebSocket(location.hostname, PORT, { webRoot: WEB_ROOT })
-    )
+    let webSocket = new SocketIoWebSocket(location.hostname, PORT, {
+      webRoot: WEB_ROOT
+    })
+    webSocket.connect()
+    this.state.melClientSocket = new MelClientSocket(webSocket)
     this.state.melHttpService = new MelHttpService('localhost', PORT, {
       webRoot: WEB_ROOT
     })
