@@ -17,6 +17,7 @@ import DownloadManager from './components/download-manager'
 import DownloadService from './services/download-service'
 
 const PORT = location.port
+const HOSTNAME = location.hostname
 const WEB_ROOT = (() => {
   let href = document.getElementsByTagName('base')[0].href
   href = href.replace(new RegExp('^' + location.origin), '')
@@ -29,12 +30,12 @@ class WebApp extends React.Component {
     super()
     console.log('Initializing WebApp')
     this.state = {}
-    let webSocket = new SocketIoWebSocket(location.hostname, PORT, {
+    let webSocket = new SocketIoWebSocket(HOSTNAME, PORT, {
       webRoot: WEB_ROOT
     })
     webSocket.connect()
     this.state.melClientSocket = new MelClientSocket(webSocket)
-    this.state.melHttpService = new MelHttpService('localhost', PORT, {
+    this.state.melHttpService = new MelHttpService(HOSTNAME, PORT, {
       webRoot: WEB_ROOT
     })
     DownloadService.initialize(this.state.melHttpService)
