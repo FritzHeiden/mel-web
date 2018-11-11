@@ -1,8 +1,7 @@
 import React from 'react'
 import { Route, Link } from 'react-router-dom'
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import FontAwesome from '@fortawesome/fontawesome'
-import faAngleRight from '@fortawesome/fontawesome-free-solid/faAngleRight'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons'
 import style from './navigation-history-bar.sass'
 
 export default class NavigationHistoryBar extends React.Component {
@@ -20,10 +19,6 @@ export default class NavigationHistoryBar extends React.Component {
 
   _gatherProps (props) {
     this.state.locations = props.locations
-  }
-
-  loadIcons () {
-    FontAwesome.library.add(faAngleRight)
   }
 
   render () {

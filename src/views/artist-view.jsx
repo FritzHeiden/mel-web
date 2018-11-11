@@ -1,9 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import FontAwesome from '@fortawesome/fontawesome'
-import faUser from '@fortawesome/fontawesome-free-solid/faUser'
-import faDotCircle from '@fortawesome/fontawesome-free-solid/faDotCircle'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser, faDotCircle } from '@fortawesome/free-solid-svg-icons'
 import { Artist } from 'mel-core'
 import NavigationHistoryBar from '../components/navigation-history-bar'
 import styles from './artist-view.sass'
@@ -15,7 +13,6 @@ export default class ArtistView extends React.Component {
     this.state = {}
     this._gatherProps(props)
     this._loadArtist()
-    this.loadIcons()
   }
 
   componentWillReceiveProps (newProps) {
@@ -27,11 +24,6 @@ export default class ArtistView extends React.Component {
     this.state.melClientSocket = props.melClientSocket
     this.state.melHttpService = props.melHttpService
     this.state.artist = new Artist(props.match.params.artistId)
-  }
-
-  loadIcons () {
-    FontAwesome.library.add(faUser)
-    FontAwesome.library.add(faDotCircle)
   }
 
   async _loadArtist () {

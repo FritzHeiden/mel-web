@@ -1,12 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import FontAwesome from '@fortawesome/fontawesome'
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import faDotCircle from '@fortawesome/fontawesome-free-solid/faDotCircle'
-import faDownload from '@fortawesome/fontawesome-free-solid/faDownload'
-import faCheck from '@fortawesome/fontawesome-free-solid/faCheck'
-import faUser from '@fortawesome/fontawesome-free-solid/faUser'
-import { Album } from 'mel-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faDotCircle,
+  faDownload,
+  faCheck,
+  faUser
+} from '@fortawesome/free-solid-svg-icons'
 
 import NavigationHistoryBar from '../components/navigation-history-bar'
 import styles from './album-view.sass'
@@ -19,7 +19,6 @@ export default class AlbumView extends React.Component {
     this.state = {}
     this.state.downloadService = DownloadService.getInstance()
     this._gatherProps(props)
-    this.loadIcons()
     this._loadAlbum()
   }
 
@@ -31,13 +30,6 @@ export default class AlbumView extends React.Component {
   _gatherProps (props) {
     this.state.melClientSocket = props.melClientSocket
     this.state.albumId = props.match.params.albumId
-  }
-
-  loadIcons () {
-    FontAwesome.library.add(faDotCircle)
-    FontAwesome.library.add(faDownload)
-    FontAwesome.library.add(faCheck)
-    FontAwesome.library.add(faUser)
   }
 
   async _loadAlbum () {

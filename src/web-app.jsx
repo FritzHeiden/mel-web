@@ -18,12 +18,7 @@ import DownloadService from './services/download-service'
 
 const PORT = location.port
 const HOSTNAME = location.hostname
-const WEB_ROOT = (() => {
-  let href = document.getElementsByTagName('base')[0].href
-  href = href.replace(new RegExp('^' + location.origin), '')
-  if (!href.endsWith('/')) href += '/'
-  return href
-})()
+const WEB_ROOT = fetchWebRoot()
 
 class WebApp extends React.Component {
   constructor () {
@@ -89,3 +84,10 @@ ReactDOM.render(
   </BrowserRouter>,
   document.getElementById('root')
 )
+
+function fetchWebRoot () {
+  let href = document.getElementsByTagName('base')[0].href
+  href = href.replace(new RegExp('^' + location.origin), '')
+  if (!href.endsWith('/')) href += '/'
+  return href
+}

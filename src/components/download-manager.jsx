@@ -1,8 +1,9 @@
 import React from 'react'
-import FontAwesome from '@fortawesome/fontawesome'
-import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
-import faListUl from '@fortawesome/fontawesome-free-solid/faListUl'
-import faDownload from '@fortawesome/fontawesome-free-solid/faDownload'
+import {
+  faTimes,
+  faListUl,
+  faDownload
+} from '@fortawesome/free-solid-svg-icons'
 
 import styles from './download-manager.sass'
 import DownloadService from '../services/download-service'
@@ -39,7 +40,6 @@ class DownloadManager extends React.Component {
     this.state.downloadState = downloadService.getState()
     this.state.totalSize = downloadService.getTotalSize()
     this._gatherProps(props)
-    this.loadIcons()
   }
 
   componentWillReceiveProps (newProps) {
@@ -48,12 +48,6 @@ class DownloadManager extends React.Component {
 
   _gatherProps (props) {
     this.state.state = props.state
-  }
-
-  loadIcons () {
-    FontAwesome.library.add(faTimes)
-    FontAwesome.library.add(faListUl)
-    FontAwesome.library.add(faDownload)
   }
 
   _onDownloadListChanged (artists) {}
