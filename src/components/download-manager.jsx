@@ -18,19 +18,19 @@ class DownloadManager extends React.Component {
 
     this.state = {}
     const downloadService = DownloadService.getInstance()
-    downloadService.addOnDownloadListChangedListener(artists => {
+    downloadService.onDownloadListChange(artists => {
       this.state.artists = artists
       this.setState(this.state)
     })
-    downloadService.addOnTotalSizeChangedListener(totalSize => {
+    downloadService.onTotalSizeChange(totalSize => {
       this.state.totalSize = totalSize
       this.setState(this.state)
     })
-    downloadService.addOnStateChangedListener(state => {
+    downloadService.onStateChange(state => {
       this.state.downloadState = state
       this.setState(this.state)
     })
-    downloadService.addOnCurrentTrackChangedListener(track => {
+    downloadService.onCurrentTrackChange(track => {
       if (track) {
         this.state.currentTrack = track
         this.setState(this.state)
@@ -106,12 +106,12 @@ class DownloadManager extends React.Component {
   }
 
   textPending () {
-    const { totalSize } = this.state
+    const { totalSize, artists } = this.state
     let artistCount = 0
     let albumCount = 0
     let trackCount = 0
 
-    for (let artist of this.state.artists) {
+    for (let artist of artists) {
       artistCount++
       for (let album of artist.getAlbums()) {
         albumCount++

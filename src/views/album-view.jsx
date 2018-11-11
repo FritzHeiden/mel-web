@@ -17,49 +17,48 @@ export default class AlbumView extends React.Component {
   constructor (props) {
     super(props)
     this.state = {}
-    this.state.downloadService = DownloadService.getInstance()
-    this._gatherProps(props)
-    this._loadAlbum()
+    this.initialize().then()
   }
 
-  componentWillReceiveProps (newProps) {
-    this._gatherProps(newProps)
-    this._loadAlbum()
+  componentWillReceiveProps () {
+    this.initialize().then()
   }
 
-  _gatherProps (props) {
-    this.state.melClientSocket = props.melClientSocket
-    this.state.albumId = props.match.params.albumId
-  }
+  async initialize () {
+    const { albumId } = this.props
 
-  async _loadAlbum () {
-    let album = await this.state.melClientSocket.getAlbum(this.state.albumId)
+    const downloadService = DownloadService.getInstance()
+    downloadService.onDownloadListChange(() => this.setState(this.state))
+    this.state.downloadService = downloadService
 
-    let tracks = []
-
-    for (let track of album.getTracks()) {
-      tracks.push(await this.state.melClientSocket.getTrack(track.getId()))
-    }
-
-    album.setTracks(tracks)
-    album.setArtist(
-      await this.state.melClientSocket.getArtist(album.getArtist().getId())
-    )
-
-    console.log(album)
-
-    this.state.album = album
+    this.state.album = await this.loadAlbum(albumId)
     this.setState(this.state)
   }
 
-  _addToDownloads () {
-    const { downloadService } = this.state
+  async loadAlbum (albumId) {
+    const { melClientSocket } = this.props
 
-    downloadService.addAlbum(this.state.album)
+    let album = await melClientSocket.getAlbum(albumId)
+
+    let tracks = []
+    for (let track of album.getTracks()) {
+      tracks.push(await melClientSocket.getTrack(track.getId()))
+    }
+    album.setTracks(tracks)
+
+    album.setArtist(await melClientSocket.getArtist(album.getArtist().getId()))
+
+    return album
+  }
+
+  addToDownloads () {
+    const { downloadService, album } = this.state
+    downloadService.addAlbum(album)
     this.setState(this.state)
   }
 
   render () {
+    const { melHttpService } = this.props
     const { album } = this.state
     if (album) {
       return (
@@ -85,17 +84,15 @@ export default class AlbumView extends React.Component {
                 <AlbumCover
                   albumId={album.getId()}
                   className={styles.cover}
-                  melHttpService={this.props.melHttpService}
+                  melHttpService={melHttpService}
                 />
               </div>
-              <h1 className={styles.albumTitle}>
-                {this.state.album.getTitle()}
-              </h1>
-              {this._renderDownloadButton()}
+              <h1 className={styles.albumTitle}>{album.getTitle()}</h1>
+              {this.renderDownloadButton()}
             </div>
             <div className={styles.musicWrapper}>
               <h2>Tracks</h2>
-              {this._renderTracks()}
+              {this.renderTracks()}
             </div>
           </div>
         </div>
@@ -105,20 +102,17 @@ export default class AlbumView extends React.Component {
     }
   }
 
-  _renderDownloadButton () {
-    const { downloadService } = this.state
+  renderDownloadButton () {
+    const { downloadService, album } = this.state
 
-    let icon
-    let text
-    if (downloadService.containsAlbum(this.state.album)) {
+    let icon = faDownload
+    let text = 'Add to Downloads'
+    if (downloadService.containsAlbum(album)) {
       icon = faCheck
       text = 'In Downloads List'
-    } else {
-      icon = faDownload
-      text = 'Add to Downloads'
     }
     return (
-      <div className={styles.download} onClick={() => this._addToDownloads()}>
+      <div className={styles.download} onClick={() => this.addToDownloads()}>
         <div className={styles.icon}>
           <FontAwesomeIcon icon={icon} />
         </div>
@@ -127,36 +121,32 @@ export default class AlbumView extends React.Component {
     )
   }
 
-  _renderTracks () {
-    let cdMap = new Map()
-    this.state.album.getTracks().forEach(track => {
-      let caption = `Disc ${track.getDiscNumber()}`
-      if (!cdMap.get(caption)) {
-        cdMap.set(caption, [])
-      }
+  renderTracks () {
+    const { album } = this.state
+    const tracks = album.getTracks()
 
-      cdMap.get(caption).push(track)
+    const discNumbers = []
+    tracks.forEach(track => {
+      const number = track.getDiscNumber()
+      if (number && discNumbers.indexOf(number) === -1) discNumbers.push(number)
     })
 
-    let elements = []
-    for (let [caption, tracks] of cdMap) {
-      let captionLabel
-      if (cdMap.size > 1) {
-        captionLabel = <h3>{caption}</h3>
-      }
+    const elements = []
+    discNumbers.sort((a, b) => a - b).forEach(discNumber => {
+      if (discNumbers.length > 1) elements.push(<h3>{'Disc ' + discNumber}</h3>)
       elements.push(
-        <div key={caption} className={styles.discWrapper}>
-          {captionLabel}
-          {tracks.sort((a, b) => a.number - b.number).map(track => (
-            <div key={track.getId()} className={styles.trackWrapper}>
-              <div className={styles.number}>{track.getNumber()}</div>
-              <div className={styles.title}>{track.getTitle()}</div>
-            </div>
-          ))}
+        <div key={discNumber} className={styles.discWrapper}>
+          {tracks
+            .filter(track => track.getDiscNumber() === discNumber)
+            .map(track => (
+              <div key={track.getId()} className={styles.trackWrapper}>
+                <div className={styles.number}>{track.getNumber()}</div>
+                <div className={styles.title}>{track.getTitle()}</div>
+              </div>
+            ))}
         </div>
       )
-    }
-
+    })
     return elements
   }
 }

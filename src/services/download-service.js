@@ -23,26 +23,26 @@ class DownloadService {
     this._totalLoaded = 0
     this._currentTrack = null
     this._state = PENDING
-    this.addOnDownloadListChangedListener(() => this._setState(PENDING))
+    this.onDownloadListChange(() => this._setState(PENDING))
   }
 
   get artists () {
     return this._artists
   }
 
-  addOnDownloadListChangedListener (listener) {
+  onDownloadListChange (listener) {
     this._eventEmitter.on(DOWNLOAD_LIST_CHANGE, listener)
   }
 
-  addOnTotalSizeChangedListener (listener) {
+  onTotalSizeChange (listener) {
     this._eventEmitter.on(TOTAL_SIZE_CHANGE, listener)
   }
 
-  addOnCurrentTrackChangedListener (listener) {
+  onCurrentTrackChange (listener) {
     this._eventEmitter.on(CURRENT_TRACK_CHANGE, listener)
   }
 
-  addOnStateChangedListener (listener) {
+  onStateChange (listener) {
     this._eventEmitter.on(STATE_CHANGE, listener)
   }
 

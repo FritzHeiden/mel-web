@@ -67,6 +67,7 @@ class WebApp extends React.Component {
             render={props => (
               <AlbumView
                 {...props}
+                albumId={props.match.params.albumId}
                 melClientSocket={melClientSocket}
                 melHttpService={melHttpService}
               />
