@@ -1,6 +1,4 @@
-import Track from '../data/track'
-import Artist from '../data/artist'
-import Album from '../data/album'
+import { Track, Artist, Album } from 'mel-core'
 
 export default class Deserializer {
   deserializeTracks (tracks) {
@@ -9,15 +7,14 @@ export default class Deserializer {
   }
 
   deserializeTrack (track) {
-    if (!track || !track.id) return null
-    let id = track.id
-    let title = track.title ? track.title : 'Unknown Track'
-    let artist = this.deserializeArtist(track.artist)
-    let album = this.deserializeAlbum(track.album)
-    let number = track.number ? track.number : 0
-    let discNumber = track.discNumber ? track.discNumber : 1
-    let filePath = track.filePath
-    return new Track(id, title, artist, album, number, discNumber, filePath)
+    if (!track || !track.getId()) return null
+    let id = track.getId()
+    let title = track.getTitle() ? track.getTitle() : 'Unknown Track'
+    let artist = this.deserializeArtist(track.getArtist())
+    let album = this.deserializeAlbum(track.getAlbum())
+    let number = track.getNumber() ? track.getNumber() : 0
+    let discNumber = track.getDiscNumber() ? track.getDiscNumber() : 1
+    return new Track(id, title, artist, album, number, discNumber)
   }
 
   deserializeArtists (artists) {
@@ -26,11 +23,11 @@ export default class Deserializer {
   }
 
   deserializeArtist (artist) {
-    if (!artist || !artist.id) return null
-    let id = artist.id
-    let name = artist.name ? artist.name : 'Unknown Artist'
-    let albums = this.deserializeAlbums(artist.albums)
-    let featureAlbums = this.deserializeAlbums(artist.featureAlbums)
+    if (!artist || !artist.getId()) return null
+    let id = artist.getId()
+    let name = artist.getName() ? artist.getName() : 'Unknown Artist'
+    let albums = this.deserializeAlbums(artist.getAlbums())
+    let featureAlbums = this.deserializeAlbums(artist.getFeatureAlbums())
     return new Artist(id, name, albums, featureAlbums)
   }
 
@@ -40,13 +37,13 @@ export default class Deserializer {
   }
 
   deserializeAlbum (album) {
-    if (!album || !album.id) return null
-    let id = album.id
-    let artist = this.deserializeArtist(album.artist)
-    let title = album.title ? album.title : 'Unknown Album'
-    let year = album.year
-    let tracks = this.deserializeTracks(album.tracks)
-    let featureArtists = this.deserializeArtists(album.featureArtists)
+    if (!album || !album.getId()) return null
+    let id = album.getId()
+    let artist = this.deserializeArtist(album.getArtist())
+    let title = album.getTitle() ? album.getTitle() : 'Unknown Album'
+    let year = album.getYear()
+    let tracks = this.deserializeTracks(album.getTracks())
+    let featureArtists = this.deserializeArtists(album.getFeatureArtists())
     return new Album(id, artist, title, year, tracks, featureArtists)
   }
 }

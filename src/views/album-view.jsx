@@ -37,12 +37,14 @@ export default class AlbumView extends React.Component {
 
     let tracks = []
 
-    for (let track of album.tracks) {
-      tracks.push(await this.state.melClientSocket.getTrack(track.id))
+    for (let track of album.getTracks()) {
+      tracks.push(await this.state.melClientSocket.getTrack(track.getId()))
     }
 
-    album.tracks = tracks
-    album.artist = await this.state.melClientSocket.getArtist(album.artist.id)
+    album.setTracks(tracks)
+    album.setArtist(
+      await this.state.melClientSocket.getArtist(album.getArtist().getId())
+    )
 
     console.log(album)
 
@@ -57,43 +59,6 @@ export default class AlbumView extends React.Component {
     this.setState(this.state)
   }
 
-  renderTrackList () {
-    return this.state.album.tracks
-      .sort((a, b) => a.number - b.number)
-      .map(track => {
-        let listArtists = artists => {
-          if (artists) {
-            return track.artists.map((artist, index) => (
-              <Link to={{ pathname: /artist/ + artist.id }}>
-                <span>
-                  {artist.name}
-                  {index + 1 === album.artists.length ? '' : ', '}
-                </span>
-              </Link>
-            ))
-          } else {
-            return ''
-          }
-        }
-        return (
-          <div key={track.id}>
-            <span>{track.number} </span>
-            <span>{track.title}</span>
-            {/* {listArtists(track.artists)} */}
-          </div>
-        )
-      })
-  }
-
-  renderOtherAlbums () {
-    return this.state.album.artist.albums.map(album => (
-      <div key={album.id}>
-        <span>{album.year} </span>
-        <span>{album.title}</span>
-      </div>
-    ))
-  }
-
   render () {
     const { album } = this.state
     if (album) {
@@ -103,13 +68,13 @@ export default class AlbumView extends React.Component {
             locations={[
               { name: 'Library', url: '/' },
               {
-                name: album.artist.name,
-                url: `/artist/${album.artist.id}`,
+                name: album.getArtist().getName(),
+                url: `/artist/${album.getArtist().getId()}`,
                 icon: faUser
               },
               {
-                name: album.title,
-                url: `/album/${album.id}`,
+                name: album.getTitle(),
+                url: `/album/${album.getId()}`,
                 icon: faDotCircle
               }
             ]}
@@ -118,12 +83,14 @@ export default class AlbumView extends React.Component {
             <div className={styles.albumInfo}>
               <div className={styles.coverWrapper}>
                 <AlbumCover
-                  albumId={album.id}
+                  albumId={album.getId()}
                   className={styles.cover}
                   melHttpService={this.props.melHttpService}
                 />
               </div>
-              <h1 className={styles.albumTitle}>{this.state.album.title}</h1>
+              <h1 className={styles.albumTitle}>
+                {this.state.album.getTitle()}
+              </h1>
               {this._renderDownloadButton()}
             </div>
             <div className={styles.musicWrapper}>
@@ -162,8 +129,8 @@ export default class AlbumView extends React.Component {
 
   _renderTracks () {
     let cdMap = new Map()
-    this.state.album.tracks.forEach(track => {
-      let caption = `Disc ${track.discNumber}`
+    this.state.album.getTracks().forEach(track => {
+      let caption = `Disc ${track.getDiscNumber()}`
       if (!cdMap.get(caption)) {
         cdMap.set(caption, [])
       }
@@ -181,9 +148,9 @@ export default class AlbumView extends React.Component {
         <div key={caption} className={styles.discWrapper}>
           {captionLabel}
           {tracks.sort((a, b) => a.number - b.number).map(track => (
-            <div key={track.id} className={styles.trackWrapper}>
-              <div className={styles.number}>{track.number}</div>
-              <div className={styles.title}>{track.title}</div>
+            <div key={track.getId()} className={styles.trackWrapper}>
+              <div className={styles.number}>{track.getNumber()}</div>
+              <div className={styles.title}>{track.getTitle()}</div>
             </div>
           ))}
         </div>

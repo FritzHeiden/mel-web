@@ -1,7 +1,6 @@
-import { Artist } from 'mel-core'
+import { Artist, Album } from 'mel-core'
 import JSZip from 'jszip'
 import EventEmitter from '../tools/event-emitter'
-import Album from '../data/album'
 
 const DOWNLOAD_LIST_CHANGE = 'download_list_change'
 const TOTAL_SIZE_CHANGE = 'total_size_change'
@@ -48,83 +47,113 @@ class DownloadService {
   }
 
   addArtist (newArtist) {
-    let artist = this._artists.find(artist => artist.id === newArtist.id)
+    let artist = this._artists.find(
+      artist => artist.getId() === newArtist.getId()
+    )
     if (!artist) {
       this._artists.push(artist)
     } else {
       newArtist.album.forEach(album => this.addAlbum(album))
     }
     this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
-    newArtist.albums.forEach(album =>
-      album.tracks.forEach(track => this._fetchTrackSize(track.id))
-    )
+    newArtist
+      .getAlbums()
+      .forEach(album =>
+        album.getTracks().forEach(track => this._fetchTrackSize(track.getId()))
+      )
   }
 
   addAlbum (newAlbum) {
-    let artist = this._artists.find(artist => artist.id === newAlbum.artist.id)
+    let artist = this._artists.find(
+      artist => artist.getId() === newAlbum.getArtist().getId()
+    )
     if (!artist) {
       // We only want our artist to have id and name
-      const { id, name } = newAlbum.artist
+      const id = newAlbum.getArtist().getId()
+      const name = newAlbum.getArtist().getName()
       let artist = new Artist(id, name)
       artist.addAlbum(newAlbum)
       this._artists.push(artist)
     } else {
-      let album = artist.albums.find(album => album.id === newAlbum.id)
+      let album = artist
+        .getAlbums()
+        .find(album => album.getId() === newAlbum.getId())
       if (!album) {
         artist.addAlbum(newAlbum)
       } else {
-        newAlbum.tracks.forEach(track => this.addTrack(track))
+        newAlbum.getTracks().forEach(track => this.addTrack(track))
       }
     }
     this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
-    newAlbum.tracks.forEach(track => this._fetchTrackSize(track.id))
+    newAlbum.getTracks().forEach(track => this._fetchTrackSize(track.getId()))
   }
 
   addTrack (newTrack) {
     let artist = this._artists.find(
-      artist => artist.id === newTrack.album.artist.id
+      artist =>
+        artist.getId() ===
+        newTrack
+          .getAlbum()
+          .getArtist()
+          .getId()
     )
     if (!artist) {
-      const { id: albumId, title, year } = newTrack.album
-      let album = new Album(albumId, null, title, year)
+      let album = newTrack.getAlbum()
+      const albumId = album.getId()
+      const title = album.getTitle()
+      const year = album.getYear()
+      album = new Album(albumId, null, title, year)
       album.addTrack(newTrack)
 
-      const { id: artistId, name } = newTrack.album.artist
-      let artist = new Artist(artistId, name)
+      let artist = album.getArtist()
+      const artistId = artist.getId()
+      const artistName = artist.getName()
+      artist = new Artist(artistId, artistName)
       artist.addAlbums(album)
       this._artists.push(artist)
     } else {
-      let album = artist.albums.find(album => album.id === newTrack.album.id)
+      let album = artist
+        .getAlbums()
+        .find(album => album.getId() === newTrack.getAlbum().getId())
       if (!album) {
-        const { id, title, year } = newTrack.album
-        let album = new Album(id, null, title, year)
+        let album = newTrack.getAlbum()
+        const id = album.getId()
+        const title = album.getTitle()
+        const year = album.getYear()
+        album = new Album(id, null, title, year)
         album.addTrack(newTrack)
         artist.addAlbum(album)
       } else {
-        let track = album.tracks.find(track => track.id === newTrack.id)
+        let track = album
+          .getTracks()
+          .find(track => track.getId() === newTrack.getId())
         if (!track) {
           album.addTrack(newTrack)
         }
       }
     }
     this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
-    this._fetchTrackSize(newTrack.id)
+    this._fetchTrackSize(newTrack.getId())
   }
 
   containsAlbum (needleAlbum) {
     let artist = this._artists.find(
-      artist => artist.id === needleAlbum.artist.id
+      artist => artist.getId() === needleAlbum.getArtist().getId()
     )
     if (!artist) {
       return false
     }
-    let album = artist.albums.find(album => album.id === needleAlbum.id)
+    let album = artist
+      .getAlbums()
+      .find(album => album.getId() === needleAlbum.getId())
     if (!album) {
       return false
     }
 
-    for (let needleTrack of needleAlbum.tracks) {
-      if (!album.tracks.find(track => track.id === needleTrack.id)) {
+    for (let needleTrack of needleAlbum.getTracks()) {
+      if (
+        !album.getTracks().find(track => track.getId() === needleTrack.getId())
+      ) {
         return false
       }
     }
@@ -147,24 +176,25 @@ class DownloadService {
     const zip = new JSZip()
     console.log('ARTISTS', this._artists)
     for (let artist of this._artists) {
-      let artistFolder = zip.folder(artist.name)
+      let artistFolder = zip.folder(artist.getName())
 
-      for (let album of artist.albums) {
-        let folderName = album.title
-        if (typeof album.year === 'number') {
-          folderName = `${album.year} - ${album.title}`
+      for (let album of artist.getAlbums()) {
+        let folderName = album.getTitle()
+        if (typeof album.getYear() === 'number') {
+          folderName = `${album.getYear()} - ${album.getTitle()}`
         }
         let albumFolder = artistFolder.folder(folderName)
 
-        for (let track of album.tracks) {
-          this._setCurrentTrack(track.id)
-          const buffer = await this._melHttpService.downloadTrack(track.id)
+        for (let track of album.getTracks()) {
+          this._setCurrentTrack(track.getId())
+          const buffer = await this._melHttpService.downloadTrack(track.getId())
           this._setCurrentTrack(null)
 
-          let fileName = track.title + '.mp3'
-          if (typeof track.number === 'number') {
+          let fileName = track.getTitle() + '.mp3'
+          if (typeof track.getNumber() === 'number') {
             fileName =
-              `${track.number}`.padStart(2, '0') + ` - ${track.title}.mp3`
+              `${track.getNumber()}`.padStart(2, '0') +
+              ` - ${track.getTitle()}.mp3`
           }
           albumFolder.file(fileName, buffer)
           console.log(zip)
@@ -187,8 +217,8 @@ class DownloadService {
 
   _setCurrentTrack (trackId) {
     this._artists.forEach(artist =>
-      artist.albums.forEach(album => {
-        const track = album.tracks.find(track => track.id === trackId)
+      artist.getAlbums().forEach(album => {
+        const track = album.getTracks().find(track => track.getId() === trackId)
         this._currentTrack = track
         this._eventEmitter.invokeAll(CURRENT_TRACK_CHANGE, track)
       })

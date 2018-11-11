@@ -113,9 +113,9 @@ class DownloadManager extends React.Component {
 
     for (let artist of this.state.artists) {
       artistCount++
-      for (let album of artist.albums) {
+      for (let album of artist.getAlbums()) {
         albumCount++
-        for (let track of album.tracks) {
+        for (let track of album.getTracks()) {
           trackCount++
         }
       }
@@ -131,7 +131,7 @@ class DownloadManager extends React.Component {
 
   textDownloading () {
     const { currentTrack } = this.state
-    return `Downloading ${currentTrack.title} ...`
+    return `Downloading ${currentTrack.getTitle()} ...`
   }
 
   _formatSize (size) {

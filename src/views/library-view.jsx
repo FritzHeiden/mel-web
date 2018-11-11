@@ -17,11 +17,11 @@ export default class LibraryView extends React.Component {
     if (this.state.artists) {
       return this.state.artists
         .filter(artist => artist !== undefined)
-        .filter(artist => artist.albums.length > 0)
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .filter(artist => artist.getAlbums().length > 0)
+        .sort((a, b) => a.getName().localeCompare(b.getName()))
         .map((artist, index) => (
-          <Link to={{ pathname: '/artist/' + artist.id }} key={index}>
-            <div className={style.listItem}>{artist.name}</div>
+          <Link to={{ pathname: '/artist/' + artist.getId() }} key={index}>
+            <div className={style.listItem}>{artist.getName()}</div>
           </Link>
         ))
     } else {
