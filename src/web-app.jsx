@@ -18,6 +18,7 @@ import DownloadService from './services/download-service'
 
 const PORT = location.port
 const HOSTNAME = location.hostname
+const PROTOCOL = location.protocol.slice(0, -1)
 const WEB_ROOT = fetchWebRoot()
 
 class WebApp extends React.Component {
@@ -31,7 +32,8 @@ class WebApp extends React.Component {
     webSocket.connect()
     this.state.melClientSocket = new MelClientSocket(webSocket)
     this.state.melHttpService = new MelHttpService(HOSTNAME, PORT, {
-      webRoot: WEB_ROOT
+      webRoot: WEB_ROOT,
+      protocol: PROTOCOL
     })
     DownloadService.initialize(this.state.melHttpService)
   }
