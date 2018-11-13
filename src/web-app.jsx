@@ -7,6 +7,7 @@ import './html/index.html'
 import './res/fonts/Oswald/Oswald-Regular.ttf'
 import './res/fonts/Open_Sans/OpenSans-Regular.ttf'
 import './res/fonts/Roboto/Roboto-Regular.ttf'
+import './res/favicon.ico'
 
 import styles from './web-app.sass'
 import LibraryView from './views/library-view'
