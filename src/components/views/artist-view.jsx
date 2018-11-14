@@ -2,9 +2,9 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
-import NavigationHistoryBar from '../components/navigation-history-bar'
+import NavigationHistoryBar from '../navigation-history-bar'
 import styles from './artist-view.sass'
-import AlbumCover from '../components/album-cover'
+import AlbumCover from '../album-cover'
 
 export default class ArtistView extends React.Component {
   constructor (props) {

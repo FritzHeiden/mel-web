@@ -26,7 +26,7 @@ class DownloadService {
     this.onDownloadListChange(() => this._setState(PENDING))
   }
 
-  get artists () {
+  getArtists () {
     return this._artists
   }
 

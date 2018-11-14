@@ -5,12 +5,9 @@ import {
   faDownload
 } from '@fortawesome/free-solid-svg-icons'
 
-import styles from './download-manager.sass'
+import styles from './download-bar.sass'
 import DownloadService from '../services/download-service'
-import Button from './general/button'
-
-const MINIMIZED = 1
-const MAXIMIZED = 2
+import Button from './atoms/button'
 
 class DownloadManager extends React.Component {
   constructor (props) {
@@ -38,34 +35,16 @@ class DownloadManager extends React.Component {
     })
     this.state.downloadService = downloadService
     this.state.downloadState = downloadService.getState()
+    this.state.artists = downloadService.getArtists()
     this.state.totalSize = downloadService.getTotalSize()
-    this._gatherProps(props)
   }
-
-  componentWillReceiveProps (newProps) {
-    this._gatherProps(newProps)
-  }
-
-  _gatherProps (props) {
-    this.state.state = props.state
-  }
-
-  _onDownloadListChanged (artists) {}
 
   render () {
     if (!this.state.artists || this.state.artists.length === 0) {
       return this._renderHidden()
-    } else {
-      if (this.state.state === MAXIMIZED) {
-        return this._renderMinimized()
-      } else {
-        return this._renderMinimized()
-      }
     }
-  }
 
-  _renderMinimized () {
-    const { downloadService, totalSize, downloadState } = this.state
+    const { downloadService, downloadState } = this.state
 
     let text = ''
 
@@ -93,7 +72,12 @@ class DownloadManager extends React.Component {
           label={'Discard'}
           onClick={() => downloadService.deleteList()}
         />
-        <Button className={styles.button} icon={faListUl} label={'Open List'} />
+        <Button
+          className={styles.button}
+          icon={faListUl}
+          label={'Open List'}
+          onClick={() => this.props.history.push('/downloads')}
+        />
         <Button
           className={styles.button}
           icon={faDownload}
@@ -151,8 +135,5 @@ class DownloadManager extends React.Component {
     return <div className={styles.wrapper + ' ' + styles.hidden} />
   }
 }
-
-DownloadManager.MINIMIZED = MINIMIZED
-DownloadManager.MAXIMIZED = MAXIMIZED
 
 export default DownloadManager

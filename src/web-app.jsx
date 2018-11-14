@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter, Route } from 'react-router-dom'
 import { MelClientSocket, MelHttpService } from 'mel-core'
+import { createMemoryHistory } from 'history'
 
 import './html/index.html'
 import './res/fonts/Oswald/Oswald-Regular.ttf'
@@ -10,12 +11,13 @@ import './res/fonts/Roboto/Roboto-Regular.ttf'
 import './res/favicon.ico'
 
 import styles from './web-app.sass'
-import LibraryView from './views/library-view'
-import ArtistView from './views/artist-view'
-import AlbumView from './views/album-view'
+import LibraryView from './components/views/library-view'
+import ArtistView from './components/views/artist-view'
+import AlbumView from './components/views/album-view'
 import SocketIoWebSocket from './network/socket-io-web-socket'
-import DownloadManager from './components/download-manager'
+import DownloadBar from './components/download-bar'
 import DownloadService from './services/download-service'
+import DownloadView from './components/views/download-view'
 
 const PORT = location.port
 const HOSTNAME = location.hostname
@@ -37,11 +39,12 @@ class WebApp extends React.Component {
       protocol: PROTOCOL
     })
     DownloadService.initialize(this.state.melHttpService)
+    this.state.memoryHistory = createMemoryHistory()
   }
 
   render () {
     const { melClientSocket, melHttpService } = this.state
-    const { MINIMIZED } = DownloadManager
+    const { MINIMIZED } = DownloadBar
     const { wrapper, content } = styles
 
     return (
@@ -76,7 +79,19 @@ class WebApp extends React.Component {
               />
             )}
           />
-          <DownloadManager state={MINIMIZED} />
+          <Route
+            path={'/downloads'}
+            render={props => (
+              <DownloadView
+                {...props}
+                memoryHistory={this.state.memoryHistory}
+              />
+            )}
+          />
+          <Route
+            path={/(?!\/downloads)\//}
+            render={props => <DownloadBar {...props} />}
+          />
         </div>
       </div>
     )

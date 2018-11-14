@@ -8,10 +8,10 @@ import {
   faUser
 } from '@fortawesome/free-solid-svg-icons'
 
-import NavigationHistoryBar from '../components/navigation-history-bar'
+import NavigationHistoryBar from '../navigation-history-bar'
 import styles from './album-view.sass'
-import DownloadService from '../services/download-service'
-import AlbumCover from '../components/album-cover'
+import DownloadService from '../../services/download-service'
+import AlbumCover from '../album-cover'
 
 export default class AlbumView extends React.Component {
   constructor (props) {
