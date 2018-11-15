@@ -42,45 +42,43 @@ export default class ArtistView extends React.Component {
 
   render () {
     const { artist } = this.state
-    if (artist) {
-      return (
-        <div className={styles.wrapper}>
-          <NavigationHistoryBar
-            locations={[
-              { name: 'Library', url: '/' },
-              {
-                name: artist.getName(),
-                url: `/artist/${artist.getId()}`,
-                icon: faUser
-              }
-            ]}
-          />
-          <div className={styles.artistWrapper}>
-            <div className={styles.artistInfo}>
-              <div className={styles.thumbWrapper}>
-                <div className={styles.placeholder}>
-                  <FontAwesomeIcon icon={faUser} />
-                </div>
-                <div className={styles.thumb} />
+    if (!artist) return <div className={styles.wrapper}>{'Loading ...'}</div>
+
+    return (
+      <div className={styles.wrapper}>
+        <NavigationHistoryBar
+          locations={[
+            { name: 'Library', url: '/' },
+            {
+              name: artist.getName(),
+              url: `/artist/${artist.getId()}`,
+              icon: faUser
+            }
+          ]}
+        />
+        <div className={styles.artistWrapper}>
+          <div className={styles.artistInfo}>
+            <div className={styles.thumbWrapper}>
+              <div className={styles.placeholder}>
+                <FontAwesomeIcon icon={faUser} />
               </div>
-              <h1>{artist.getName()}</h1>
+              <div className={styles.thumb} />
             </div>
-            <div className={styles.musicWrapper}>
-              <h2>Albums</h2>
-              <div className={styles.albumsWrapper}>
-                {this.renderAlbumList(artist.getAlbums())}
-              </div>
-              <h2>Appears on</h2>
-              <div className={styles.albumsWrapper}>
-                {this.renderAlbumList(artist.getFeatureAlbums())}
-              </div>
+            <h1>{artist.getName()}</h1>
+          </div>
+          <div className={styles.musicWrapper}>
+            <h2>Albums</h2>
+            <div className={styles.albumsWrapper}>
+              {this.renderAlbumList(artist.getAlbums())}
+            </div>
+            <h2>Appears on</h2>
+            <div className={styles.albumsWrapper}>
+              {this.renderAlbumList(artist.getFeatureAlbums())}
             </div>
           </div>
         </div>
-      )
-    } else {
-      return <div>Loading ...</div>
-    }
+      </div>
+    )
   }
 
   renderAlbumList (albums) {

@@ -5,7 +5,7 @@
   flex-direction: column
 
   .head
-    padding: 2em
+    padding: 2em 2em 1em 2em
     display: flex
     flex-shrink: 0
 
@@ -25,4 +25,46 @@
         &:hover
           color: #606060
           cursor: pointer
+
+  .downloadList
+    flex: 1
+    overflow: auto
+    display: flex
+    flex-direction: column
+    padding: 1em 2em 0 2em
+
+    & > *
+      flex-shrink: 0
+
+    .listItem
+      display: flex
+      align-items: center
+      padding: 0.1em
+
+      &:last-child
+        padding-bottom: 2em
+
+      .artist
+        display: flex
+        align-items: center
+        flex: 1
+
+        .icon
+          margin-right: 0.5em
+
+      .album
+        display: flex
+        align-items: center
+        flex: 1
+
+        .icon
+          margin-right: 0.5em
+
+      .track
+        display: flex
+        flex: 2
+
+      .label:hover
+        text-decoration: underline
+        cursor: pointer
 

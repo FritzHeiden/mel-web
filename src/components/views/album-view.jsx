@@ -60,46 +60,44 @@ export default class AlbumView extends React.Component {
   render () {
     const { melHttpService } = this.props
     const { album } = this.state
-    if (album) {
-      return (
-        <div className={styles.wrapper}>
-          <NavigationHistoryBar
-            locations={[
-              { name: 'Library', url: '/' },
-              {
-                name: album.getArtist().getName(),
-                url: `/artist/${album.getArtist().getId()}`,
-                icon: faUser
-              },
-              {
-                name: album.getTitle(),
-                url: `/album/${album.getId()}`,
-                icon: faDotCircle
-              }
-            ]}
-          />
-          <div className={styles.albumWrapper}>
-            <div className={styles.albumInfo}>
-              <div className={styles.coverWrapper}>
-                <AlbumCover
-                  albumId={album.getId()}
-                  className={styles.cover}
-                  melHttpService={melHttpService}
-                />
-              </div>
-              <h1 className={styles.albumTitle}>{album.getTitle()}</h1>
-              {this.renderDownloadButton()}
+    if (!album) return <div className={styles.wrapper}>{'Loading ...'}</div>
+
+    return (
+      <div className={styles.wrapper}>
+        <NavigationHistoryBar
+          locations={[
+            { name: 'Library', url: '/' },
+            {
+              name: album.getArtist().getName(),
+              url: `/artist/${album.getArtist().getId()}`,
+              icon: faUser
+            },
+            {
+              name: album.getTitle(),
+              url: `/album/${album.getId()}`,
+              icon: faDotCircle
+            }
+          ]}
+        />
+        <div className={styles.albumWrapper}>
+          <div className={styles.albumInfo}>
+            <div className={styles.coverWrapper}>
+              <AlbumCover
+                albumId={album.getId()}
+                className={styles.cover}
+                melHttpService={melHttpService}
+              />
             </div>
-            <div className={styles.musicWrapper}>
-              <h2>Tracks</h2>
-              {this.renderTracks()}
-            </div>
+            <h1 className={styles.albumTitle}>{album.getTitle()}</h1>
+            {this.renderDownloadButton()}
+          </div>
+          <div className={styles.musicWrapper}>
+            <h2>Tracks</h2>
+            {this.renderTracks()}
           </div>
         </div>
-      )
-    } else {
-      return <div>Loading ...</div>
-    }
+      </div>
+    )
   }
 
   renderDownloadButton () {
@@ -133,7 +131,7 @@ export default class AlbumView extends React.Component {
 
     const elements = []
     discNumbers.sort((a, b) => a - b).forEach(discNumber => {
-      if (discNumbers.length > 1) elements.push(<h3>{'Disc ' + discNumber}</h3>)
+      if (discNumbers.length > 1) { elements.push(<h3 key={'disc' + discNumber}>{'Disc ' + discNumber}</h3>) }
       elements.push(
         <div key={discNumber} className={styles.discWrapper}>
           {tracks
