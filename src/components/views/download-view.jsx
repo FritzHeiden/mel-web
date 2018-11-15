@@ -1,6 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTimes, faUser, faDotCircle } from '@fortawesome/free-solid-svg-icons'
+import { faTimes, faUser, faDotCircle, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
 import DownloadService from '../../services/download-service'
 
@@ -10,8 +10,13 @@ class DownloadView extends React.Component {
   constructor () {
     super()
     this.state = {}
-    this.state.downloadService = DownloadService.getInstance()
-    this.state.artists = this.state.downloadService.getArtists()
+    const downloadService = DownloadService.getInstance()
+    this.state.artists = downloadService.getArtists()
+    downloadService.onDownloadListChange(artists => {
+      this.state.artists = artists
+      this.setState(this.state)
+    })
+    this.state.downloadService = downloadService
   }
 
   close () {
@@ -21,6 +26,11 @@ class DownloadView extends React.Component {
     } else {
       history.push('/')
     }
+  }
+
+  removeTrack (track) {
+    const { downloadService } = this.state
+    downloadService.deleteTrack(track.getId())
   }
 
   render () {
@@ -76,6 +86,9 @@ class DownloadView extends React.Component {
                   >
                     {artist.getName()}
                   </div>
+                </div>
+                <div className={styles.delete}>
+                  <FontAwesomeIcon icon={faTrashAlt} onClick={() => this.removeTrack(track)} />
                 </div>
               </div>
             ))

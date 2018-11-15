@@ -136,6 +136,19 @@ class DownloadService {
     this._fetchTrackSize(newTrack.getId())
   }
 
+  deleteTrack (trackId) {
+    for (let artist of this._artists) {
+      for (let album of artist.getAlbums()) {
+        for (let track of album.getTracks()) {
+          if (track.getId() !== trackId) continue
+          album.deleteTrack(trackId)
+          this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
+          return
+        }
+      }
+    }
+  }
+
   containsAlbum (needleAlbum) {
     let artist = this._artists.find(
       artist => artist.getId() === needleAlbum.getArtist().getId()

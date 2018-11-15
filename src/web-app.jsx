@@ -89,7 +89,7 @@ class WebApp extends React.Component {
             )}
           />
           <Route
-            path={'(?!/downloads)/'}
+            path={/(?!\/downloads)\//}
             render={props => <DownloadBar {...props} />}
           />
         </div>
