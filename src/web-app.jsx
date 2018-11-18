@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter, Route } from 'react-router-dom'
 import { MelClientSocket, MelHttpService } from 'mel-core'
-import { createMemoryHistory } from 'history'
 
 import './html/index.html'
 import './res/fonts/Oswald/Oswald-Regular.ttf'
@@ -39,12 +38,10 @@ class WebApp extends React.Component {
       protocol: PROTOCOL
     })
     DownloadService.initialize(this.state.melHttpService)
-    this.state.memoryHistory = createMemoryHistory()
   }
 
   render () {
     const { melClientSocket, melHttpService } = this.state
-    const { MINIMIZED } = DownloadBar
     const { wrapper, content } = styles
 
     return (
@@ -81,15 +78,11 @@ class WebApp extends React.Component {
           />
           <Route
             path={'/downloads'}
-            render={props => (
-              <DownloadView
-                {...props}
-                memoryHistory={this.state.memoryHistory}
-              />
-            )}
+            render={props => <DownloadView {...props} />}
           />
           <Route
-            path={/(?!\/downloads)\//}
+            path={'/'}
+            // path={/(?!\/downloads)\//}
             render={props => <DownloadBar {...props} />}
           />
         </div>

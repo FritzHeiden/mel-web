@@ -2,21 +2,23 @@ import React from 'react'
 import {
   faTimes,
   faListUl,
-  faDownload
+  faDownload,
+  faBan
 } from '@fortawesome/free-solid-svg-icons'
 
 import styles from './download-bar.sass'
 import DownloadService from '../services/download-service'
 import Button from './atoms/button'
+import StringFormatter from '../utils/string-formatter'
 
-class DownloadManager extends React.Component {
+class DownloadBar extends React.Component {
   constructor (props) {
     super(props)
 
     this.state = {}
     const downloadService = DownloadService.getInstance()
-    downloadService.onDownloadListChange(artists => {
-      this.state.artists = artists
+    downloadService.onDownloadListChange(downloadItems => {
+      this.state.downloadItems = downloadItems
       this.setState(this.state)
     })
     downloadService.onTotalSizeChange(totalSize => {
@@ -27,24 +29,26 @@ class DownloadManager extends React.Component {
       this.state.downloadState = state
       this.setState(this.state)
     })
-    downloadService.onCurrentTrackChange(track => {
-      if (track) {
-        this.state.currentTrack = track
+    downloadService.onCurrentItemChange(item => {
+      if (item) {
+        this.state.currentItem = item
         this.setState(this.state)
       }
     })
     this.state.downloadService = downloadService
     this.state.downloadState = downloadService.getState()
-    this.state.artists = downloadService.getArtists()
+    this.state.downloadItems = downloadService.getDownloadItems()
     this.state.totalSize = downloadService.getTotalSize()
   }
 
   render () {
-    if (!this.state.artists || this.state.artists.length === 0) {
-      return this._renderHidden()
+    const { downloadService, downloadState, downloadItems } = this.state
+    if (
+      this.props.history.location.pathname !== '/downloads' &&
+      (!downloadItems || downloadItems.length === 0)
+    ) {
+      return <div className={styles.wrapper + ' ' + styles.hidden} />
     }
-
-    const { downloadService, downloadState } = this.state
 
     let text = ''
 
@@ -69,71 +73,84 @@ class DownloadManager extends React.Component {
         <Button
           className={styles.button}
           icon={faTimes}
-          label={'Discard'}
+          label={'Clear'}
           onClick={() => downloadService.deleteList()}
         />
-        <Button
-          className={styles.button}
-          icon={faListUl}
-          label={'Open List'}
-          onClick={() => this.props.history.push('/downloads')}
-        />
-        <Button
-          className={styles.button}
-          icon={faDownload}
-          label={'Download'}
-          accent
-          onClick={() => downloadService.startDownload()}
-        />
+        {this.props.history.location.pathname === '/downloads' ? (
+          <Button
+            className={styles.button}
+            icon={faListUl}
+            label={'Close List'}
+            onClick={() =>
+              this.props.history.action === 'PUSH'
+                ? this.props.history.goBack()
+                : this.props.history.push('/')
+            }
+          />
+        ) : (
+          <Button
+            className={styles.button}
+            icon={faListUl}
+            label={'Open List'}
+            onClick={() => this.props.history.push('/downloads')}
+          />
+        )}
+        {downloadService.getState() === DownloadService.DOWNLOADING ? (
+          <Button
+            className={styles.button}
+            icon={faBan}
+            label={'Abort'}
+            accent
+            onClick={() => downloadService.abortDownload()}
+            disabled={false}
+          />
+        ) : (
+          <Button
+            className={styles.button}
+            icon={faDownload}
+            label={'Download'}
+            accent
+            onClick={() => downloadService.startDownload()}
+            disabled={
+              downloadService.getDownloadItems().length === 0 ||
+              (downloadService.getState() !== DownloadService.DONE &&
+                downloadService.getState() !== DownloadService.PENDING)
+            }
+          />
+        )}
       </div>
     )
   }
 
   textPending () {
-    const { totalSize, artists } = this.state
-    let artistCount = 0
-    let albumCount = 0
-    let trackCount = 0
+    const { downloadItems, downloadService } = this.state
+    const artists = []
+    const albums = []
+    const totalSize = downloadService.getTotalSize()
 
-    for (let artist of artists) {
-      artistCount++
-      for (let album of artist.getAlbums()) {
-        albumCount++
-        for (let track of album.getTracks()) {
-          trackCount++
-        }
-      }
-    }
+    downloadItems.forEach(item => {
+      const track = item.getTrack()
+      const albumId = track.getAlbum().getId()
+      const artistId = track
+        .getAlbum()
+        .getArtist()
+        .getId()
+      if (artists.indexOf(artistId) === -1) artists.push(artistId)
+      if (albums.indexOf(albumId) === -1) albums.push(albumId)
+    })
 
     return (
-      `${artistCount} Artists, ` +
-      `${albumCount} Albums, ` +
-      `${trackCount} Tracks selected for download. ` +
-      `(${this._formatSize(totalSize)})`
+      `${artists.length} Artists, ` +
+      `${albums.length} Albums, ` +
+      `${downloadItems.length} Tracks selected for download. ` +
+      `(${StringFormatter.formatSize(totalSize)})`
     )
   }
 
   textDownloading () {
-    const { currentTrack } = this.state
-    return `Downloading ${currentTrack.getTitle()} ...`
-  }
-
-  _formatSize (size) {
-    const KB = 1000
-    const MB = 1000000
-    const GB = 1000000000
-    if (size < MB) {
-      return String(Math.floor(size / KB * 100) / 100) + ' KB'
-    } else if (size < GB) {
-      return String(Math.floor(size / MB * 100) / 100) + ' MB'
-    } else {
-      return String(Math.floor(size / GB * 100) / 100) + ' GB'
-    }
-  }
-
-  _renderHidden () {
-    return <div className={styles.wrapper + ' ' + styles.hidden} />
+    const { currentItem } = this.state
+    return `Downloading ${currentItem.getTrack().getTitle()} ...`
   }
 }
 
-export default DownloadManager
+export default DownloadBar

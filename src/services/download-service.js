@@ -1,12 +1,13 @@
-import { Artist, Album } from 'mel-core'
 import JSZip from 'jszip'
-import EventEmitter from '../tools/event-emitter'
+
+import EventEmitter from '../utils/event-emitter'
+import DownloadItem from './download-item'
 
 const DOWNLOAD_LIST_CHANGE = 'download_list_change'
 const TOTAL_SIZE_CHANGE = 'total_size_change'
-const TOTAL_LOADED_CHANGE = 'total_loaded_change'
 const CURRENT_TRACK_CHANGE = 'current_track_change'
 const STATE_CHANGE = 'state_change'
+const CURRENT_ITEM_PROGRESS_CHANGE = 'current_item_progress_change'
 
 const PENDING = 'pending'
 const DOWNLOADING = 'downloading'
@@ -15,204 +16,102 @@ const DONE = 'done'
 
 class DownloadService {
   constructor (melHttpService) {
-    this._artists = []
+    this._downloadItems = []
     this._melHttpService = melHttpService
     this._eventEmitter = new EventEmitter()
-    this._totalSize = 0
-    this._trackSizes = {}
-    this._totalLoaded = 0
-    this._currentTrack = null
+    this._currentItem = null
     this._state = PENDING
     this.onDownloadListChange(() => this._setState(PENDING))
   }
 
-  getArtists () {
-    return this._artists
+  containsTrack (trackId) {
+    return this._downloadItems.some(item => item.getTrack().getId() === trackId)
   }
 
-  onDownloadListChange (listener) {
-    this._eventEmitter.on(DOWNLOAD_LIST_CHANGE, listener)
+  containsAlbum (album) {
+    return !album.getTracks().some(track => !this.containsTrack(track.getId()))
   }
 
-  onTotalSizeChange (listener) {
-    this._eventEmitter.on(TOTAL_SIZE_CHANGE, listener)
+  addTrack (track) {
+    if (this.containsTrack(track.getId())) return
+    const downloadItem = new DownloadItem(track)
+    this._melHttpService.getTrackDataInfo(track.getId()).then(({ size }) => {
+      downloadItem.setSize(size)
+      this._fireDownloadListChange()
+    })
+    this._downloadItems.push(downloadItem)
   }
 
-  onCurrentTrackChange (listener) {
-    this._eventEmitter.on(CURRENT_TRACK_CHANGE, listener)
-  }
-
-  onStateChange (listener) {
-    this._eventEmitter.on(STATE_CHANGE, listener)
-  }
-
-  addArtist (newArtist) {
-    let artist = this._artists.find(
-      artist => artist.getId() === newArtist.getId()
+  removeTrack (trackId) {
+    const index = this._downloadItems.findIndex(
+      item => item.getTrack().getId() === trackId
     )
-    if (!artist) {
-      this._artists.push(artist)
-    } else {
-      newArtist.album.forEach(album => this.addAlbum(album))
-    }
-    this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
-    newArtist
-      .getAlbums()
-      .forEach(album =>
-        album.getTracks().forEach(track => this._fetchTrackSize(track.getId()))
-      )
+    if (index === -1) return
+    this._downloadItems.splice(index, 1)
+    this._fireDownloadListChange()
   }
 
-  addAlbum (newAlbum) {
-    let artist = this._artists.find(
-      artist => artist.getId() === newAlbum.getArtist().getId()
-    )
-    if (!artist) {
-      // We only want our artist to have id and name
-      const id = newAlbum.getArtist().getId()
-      const name = newAlbum.getArtist().getName()
-      let artist = new Artist(id, name)
-      artist.addAlbum(newAlbum)
-      this._artists.push(artist)
-    } else {
-      let album = artist
-        .getAlbums()
-        .find(album => album.getId() === newAlbum.getId())
-      if (!album) {
-        artist.addAlbum(newAlbum)
-      } else {
-        newAlbum.getTracks().forEach(track => this.addTrack(track))
-      }
-    }
-    this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
-    newAlbum.getTracks().forEach(track => this._fetchTrackSize(track.getId()))
+  addAlbum (album) {
+    album.getTracks().forEach(track => this.addTrack(track))
   }
 
-  addTrack (newTrack) {
-    let artist = this._artists.find(
-      artist =>
-        artist.getId() ===
-        newTrack
-          .getAlbum()
-          .getArtist()
-          .getId()
-    )
-    if (!artist) {
-      let album = newTrack.getAlbum()
-      const albumId = album.getId()
-      const title = album.getTitle()
-      const year = album.getYear()
-      album = new Album(albumId, null, title, year)
-      album.addTrack(newTrack)
-
-      let artist = album.getArtist()
-      const artistId = artist.getId()
-      const artistName = artist.getName()
-      artist = new Artist(artistId, artistName)
-      artist.addAlbums(album)
-      this._artists.push(artist)
-    } else {
-      let album = artist
-        .getAlbums()
-        .find(album => album.getId() === newTrack.getAlbum().getId())
-      if (!album) {
-        let album = newTrack.getAlbum()
-        const id = album.getId()
-        const title = album.getTitle()
-        const year = album.getYear()
-        album = new Album(id, null, title, year)
-        album.addTrack(newTrack)
-        artist.addAlbum(album)
-      } else {
-        let track = album
-          .getTracks()
-          .find(track => track.getId() === newTrack.getId())
-        if (!track) {
-          album.addTrack(newTrack)
-        }
-      }
-    }
-    this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
-    this._fetchTrackSize(newTrack.getId())
+  getDownloadItems () {
+    return this._downloadItems
   }
 
-  deleteTrack (trackId) {
-    for (let artist of this._artists) {
-      for (let album of artist.getAlbums()) {
-        for (let track of album.getTracks()) {
-          if (track.getId() !== trackId) continue
-          album.deleteTrack(trackId)
-          this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
-          return
-        }
-      }
-    }
-  }
-
-  containsAlbum (needleAlbum) {
-    let artist = this._artists.find(
-      artist => artist.getId() === needleAlbum.getArtist().getId()
-    )
-    if (!artist) {
-      return false
-    }
-    let album = artist
-      .getAlbums()
-      .find(album => album.getId() === needleAlbum.getId())
-    if (!album) {
-      return false
-    }
-
-    for (let needleTrack of needleAlbum.getTracks()) {
-      if (
-        !album.getTracks().find(track => track.getId() === needleTrack.getId())
-      ) {
-        return false
-      }
-    }
-
-    return true
+  getTotalSize () {
+    return this._downloadItems.reduce((accumulator, item) => {
+      const size = item.getSize()
+      if (!size) return accumulator
+      return accumulator + size
+    }, 0)
   }
 
   deleteList () {
-    this._artists = []
-    this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._artists)
-    this._totalSize = 0
-    this._currentTrack = null
-    this._trackSizes = {}
+    this.abortDownload()
+    this._currentItem = null
+    this._fireCurrentItemChange()
     this._state = PENDING
-    this._totalLoaded = 0
+    this._fireStateChange()
+    this._downloadItems = []
+    this._fireDownloadListChange()
   }
 
   async startDownload () {
     this._setState(DOWNLOADING)
     const zip = new JSZip()
-    console.log('ARTISTS', this._artists)
-    for (let artist of this._artists) {
+    for (let item of this._downloadItems) {
+      const track = item.getTrack()
+      const album = track.getAlbum()
+      const artist = album.getArtist()
+
       let artistFolder = zip.folder(artist.getName())
 
-      for (let album of artist.getAlbums()) {
-        let folderName = album.getTitle()
-        if (typeof album.getYear() === 'number') {
-          folderName = `${album.getYear()} - ${album.getTitle()}`
-        }
-        let albumFolder = artistFolder.folder(folderName)
-
-        for (let track of album.getTracks()) {
-          this._setCurrentTrack(track.getId())
-          const buffer = await this._melHttpService.downloadTrack(track.getId())
-          this._setCurrentTrack(null)
-
-          let fileName = track.getTitle() + '.mp3'
-          if (typeof track.getNumber() === 'number') {
-            fileName =
-              `${track.getNumber()}`.padStart(2, '0') +
-              ` - ${track.getTitle()}.mp3`
-          }
-          albumFolder.file(fileName, buffer)
-          console.log(zip)
-        }
+      let albumFolderName = album.getTitle()
+      if (typeof album.getYear() === 'number') {
+        albumFolderName = `${album.getYear()} - ${album.getTitle()}`
       }
+      let albumFolder = artistFolder.folder(albumFolderName)
+
+      this._setCurrentItem(item)
+      let buffer = item.getBuffer()
+      if (!buffer) {
+        buffer = await this._melHttpService.downloadTrack(
+          track.getId(),
+          progress => this._fireCurrentItemProgressChange(progress)
+        )
+        item.setBuffer(buffer)
+      }
+      item.setStatus(DownloadItem.SUCCESS)
+      this._setCurrentItem(null)
+      if (this._state !== DOWNLOADING) return
+
+      let fileName = track.getTitle() + '.mp3'
+      if (typeof track.getNumber() === 'number') {
+        fileName =
+          `${track.getNumber()}`.padStart(2, '0') + ` - ${track.getTitle()}.mp3`
+      }
+      albumFolder.file(fileName, buffer)
     }
     this._setState(ZIPPING)
     const blob = await zip.generateAsync({ type: 'blob' })
@@ -220,30 +119,38 @@ class DownloadService {
     this._setState(DONE)
   }
 
-  async _fetchTrackSize (trackId) {
-    const { size } = await this._melHttpService.getTrackDataInfo(trackId)
-    this._totalSize += size
-    this._trackSizes[trackId] = size
-    this._eventEmitter.invokeAll(TOTAL_SIZE_CHANGE, this._totalSize)
-    return size
-  }
-
-  _setCurrentTrack (trackId) {
-    this._artists.forEach(artist =>
-      artist.getAlbums().forEach(album => {
-        const track = album.getTracks().find(track => track.getId() === trackId)
-        this._currentTrack = track
-        this._eventEmitter.invokeAll(CURRENT_TRACK_CHANGE, track)
-      })
+  abortDownload () {
+    if (!this._currentItem) return
+    this._melHttpService.abortTrackDownload(
+      this._currentItem.getTrack().getId()
     )
+    this._setState(PENDING)
+    this._downloadItems.forEach(
+      item =>
+        item.getBuffer()
+          ? item.setStatus(DownloadItem.SUCCESS)
+          : item.setStatus(DownloadItem.IDLE)
+    )
+    this._fireStateChange()
   }
 
-  getCurrentTrack () {
-    return this._currentTrack
+  _setCurrentItem (downloadItem) {
+    this._currentItem = downloadItem
+    if (downloadItem) downloadItem.setStatus(DownloadItem.DOWNLOADING)
+    this._fireCurrentItemChange()
+  }
+
+  getCurrentItem () {
+    return this._currentItem
   }
 
   _setState (state) {
     if (state !== this._state) {
+      if (state === DOWNLOADING) {
+        this._downloadItems.forEach(item =>
+          item.setStatus(DownloadItem.PENDING)
+        )
+      }
       this._state = state
       this._eventEmitter.invokeAll(STATE_CHANGE, this._state)
     }
@@ -253,12 +160,40 @@ class DownloadService {
     return this._state
   }
 
-  getTrackSize (trackId) {
-    return this._trackSizes[trackId]
+  onDownloadListChange (listener) {
+    this._eventEmitter.on(DOWNLOAD_LIST_CHANGE, listener)
   }
 
-  getTotalSize () {
-    return this._totalSize
+  _fireDownloadListChange () {
+    this._eventEmitter.invokeAll(DOWNLOAD_LIST_CHANGE, this._downloadItems)
+  }
+
+  onTotalSizeChange (listener) {
+    this._eventEmitter.on(TOTAL_SIZE_CHANGE, listener)
+  }
+
+  onCurrentItemChange (listener) {
+    this._eventEmitter.on(CURRENT_TRACK_CHANGE, listener)
+  }
+
+  _fireCurrentItemChange () {
+    this._eventEmitter.invokeAll(CURRENT_TRACK_CHANGE, this._currentItem)
+  }
+
+  onStateChange (listener) {
+    this._eventEmitter.on(STATE_CHANGE, listener)
+  }
+
+  _fireStateChange () {
+    this._eventEmitter.invokeAll(STATE_CHANGE, this._state)
+  }
+
+  onCurrentItemProgressChange (listener) {
+    this._eventEmitter.on(CURRENT_ITEM_PROGRESS_CHANGE, listener)
+  }
+
+  _fireCurrentItemProgressChange (progress) {
+    this._eventEmitter.invokeAll(CURRENT_ITEM_PROGRESS_CHANGE, progress)
   }
 }
 

@@ -48,6 +48,9 @@
         display: flex
         align-items: center
         flex: 1
+        text-overflow: ellipsis
+        white-space: nowrap
+        overflow: hidden
 
         .icon
           margin-right: 0.5em
@@ -56,6 +59,9 @@
         display: flex
         align-items: center
         flex: 1
+        text-overflow: ellipsis
+        white-space: nowrap
+        overflow: hidden
 
         .icon
           margin-right: 0.5em
@@ -63,14 +69,41 @@
       .track
         display: flex
         flex: 2
+        text-overflow: ellipsis
+        white-space: nowrap
+        overflow: hidden
 
       .label:hover
         text-decoration: underline
         cursor: pointer
 
+      .size
+        width: 5em
+        text-overflow: ellipsis
+        white-space: nowrap
+        overflow: hidden
+        margin-right: 1em
+
+      .status
+        width: 1.5em
+        margin-right: 1em
+        display: flex
+        justify-content: center
+        align-items: center
+
+        .progress > path
+          fill: #ccc
+
       .delete
+        width: 1em
+        height: 1em
         color: #606060
         cursor: pointer
+        display: flex
+        justify-content: center
+        align-items: center
 
         &:hover
           color: inherit
+
+

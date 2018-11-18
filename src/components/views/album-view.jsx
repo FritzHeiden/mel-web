@@ -42,7 +42,9 @@ export default class AlbumView extends React.Component {
 
     let tracks = []
     for (let track of album.getTracks()) {
-      tracks.push(await melClientSocket.getTrack(track.getId()))
+      track = await melClientSocket.getTrack(track.getId())
+      track.setAlbum(album)
+      tracks.push(track)
     }
     album.setTracks(tracks)
 
@@ -131,7 +133,9 @@ export default class AlbumView extends React.Component {
 
     const elements = []
     discNumbers.sort((a, b) => a - b).forEach(discNumber => {
-      if (discNumbers.length > 1) { elements.push(<h3 key={'disc' + discNumber}>{'Disc ' + discNumber}</h3>) }
+      if (discNumbers.length > 1) {
+        elements.push(<h3 key={'disc' + discNumber}>{'Disc ' + discNumber}</h3>)
+      }
       elements.push(
         <div key={discNumber} className={styles.discWrapper}>
           {tracks
