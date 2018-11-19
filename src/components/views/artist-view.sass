@@ -1,3 +1,10 @@
+.loading
+  flex: 1
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+
 .wrapper
   display: flex
   flex-direction: column
@@ -19,8 +26,13 @@
       flex-direction: column
       border: 0 solid rgb(50, 50, 50)
       border-right-width: 1px
+      @media (orientation: landscape)
+        overflow: auto
 
       padding: 2em 2em 0 2em
+
+      & > *
+        flex-shrink: 0
 
       .thumbWrapper
         align-self: center
@@ -76,6 +88,11 @@
         align-content: flex-start
         justify-content: space-between
         padding: 1em
+
+        .placeholder
+          visibility: hidden
+          width: 12em
+          margin: 0 1em 0 1em
 
         .albumWrapper
           display: flex

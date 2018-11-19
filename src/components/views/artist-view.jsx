@@ -2,9 +2,11 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
+
 import NavigationHistoryBar from '../navigation-history-bar'
 import styles from './artist-view.sass'
 import AlbumCover from '../album-cover'
+import Spinner from '../atoms/spinner'
 
 export default class ArtistView extends React.Component {
   constructor (props) {
@@ -42,7 +44,14 @@ export default class ArtistView extends React.Component {
 
   render () {
     const { artist } = this.state
-    if (!artist) return <div className={styles.wrapper}>{'Loading ...'}</div>
+    if (!artist) {
+      return (
+        <div className={styles.loading}>
+          <Spinner />
+          <div>{'Loading ...'}</div>
+        </div>
+      )
+    }
 
     return (
       <div className={styles.wrapper}>
@@ -85,20 +94,29 @@ export default class ArtistView extends React.Component {
 
   renderAlbumList (albums) {
     const { melHttpService } = this.props
-    return albums.sort((a, b) => b.year - a.year).map(album => (
-      <Link
-        key={album.getId()}
-        className={styles.albumWrapper}
-        to={{ pathname: '/album/' + album.getId() }}
-      >
-        <AlbumCover
-          className={styles.cover}
-          albumId={album.getId()}
-          melHttpService={melHttpService}
-        />
-        <div className={styles.title}>{album.getTitle()}</div>
-        <div className={styles.year}>{album.getYear()}</div>
-      </Link>
-    ))
+    return albums
+      .sort((a, b) => b.year - a.year)
+      .map(album => (
+        <Link
+          key={album.getId()}
+          className={styles.albumWrapper}
+          to={{ pathname: '/album/' + album.getId() }}
+        >
+          <AlbumCover
+            className={styles.cover}
+            albumId={album.getId()}
+            melHttpService={melHttpService}
+          />
+          <div className={styles.title}>{album.getTitle()}</div>
+          <div className={styles.year}>{album.getYear()}</div>
+        </Link>
+      ))
+      .concat(
+        [null, null, null, null, null, null, null, null, null, null].map(
+          (element, index) => {
+            return <div key={index} className={styles.placeholder} />
+          }
+        )
+      )
   }
 }

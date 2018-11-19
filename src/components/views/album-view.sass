@@ -1,3 +1,10 @@
+.loading
+  flex: 1
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+
 .wrapper
   flex: 1
   display: flex
@@ -17,9 +24,15 @@
     .albumInfo
       display: flex
       flex-direction: column
+      @media (orientation: landscape)
+        overflow: auto
 
       border: 0 solid rgb(50, 50, 50)
       border-right-width: 1px
+
+      & > *
+        flex-shrink: 0
+
 
       .coverWrapper
         align-self: center

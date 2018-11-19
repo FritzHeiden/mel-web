@@ -1,5 +1,4 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faDotCircle,
@@ -12,6 +11,7 @@ import NavigationHistoryBar from '../navigation-history-bar'
 import styles from './album-view.sass'
 import DownloadService from '../../services/download-service'
 import AlbumCover from '../album-cover'
+import Spinner from '../atoms/spinner'
 
 export default class AlbumView extends React.Component {
   constructor (props) {
@@ -62,7 +62,14 @@ export default class AlbumView extends React.Component {
   render () {
     const { melHttpService } = this.props
     const { album } = this.state
-    if (!album) return <div className={styles.wrapper}>{'Loading ...'}</div>
+    if (!album) {
+      return (
+        <div className={styles.loading}>
+          <Spinner />
+          <div>{'Loading ...'}</div>
+        </div>
+      )
+    }
 
     return (
       <div className={styles.wrapper}>
