@@ -90,11 +90,15 @@ export default class AlbumView extends React.Component {
                 melHttpService={melHttpService}
               />
             </div>
-            <h1 className={styles.albumTitle}>{album.getTitle()}</h1>
+            <div className={styles.albumTitle}>
+              <h1>{album.getTitle()}</h1>
+            </div>
             {this.renderDownloadButton()}
           </div>
           <div className={styles.musicWrapper}>
-            <h2>Tracks</h2>
+            <div className={styles.head}>
+              <h2>{'Tracks'}</h2>
+            </div>
             {this.renderTracks()}
           </div>
         </div>
@@ -134,7 +138,11 @@ export default class AlbumView extends React.Component {
     const elements = []
     discNumbers.sort((a, b) => a - b).forEach(discNumber => {
       if (discNumbers.length > 1) {
-        elements.push(<h3 key={'disc' + discNumber}>{'Disc ' + discNumber}</h3>)
+        elements.push(
+          <div className={styles.head} key={'disc' + discNumber}>
+            <h3>{'Disc ' + discNumber}</h3>
+          </div>
+        )
       }
       elements.push(
         <div key={discNumber} className={styles.discWrapper}>

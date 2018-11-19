@@ -30,9 +30,10 @@ export default class NavigationHistoryBar extends React.Component {
   }
 
   _renderLocations () {
+    const { locations } = this.state
     let elements = []
-    for (let i = 0; i < this.state.locations.length; i++) {
-      let location = this.state.locations[i]
+    for (let i = 0; i < locations.length; i++) {
+      let location = locations[i]
       if (location.icon) {
         elements.push(
           <Link key={i} className={style.element} to={location.url}>
@@ -48,7 +49,7 @@ export default class NavigationHistoryBar extends React.Component {
         )
       }
 
-      if (i + 1 !== this.state.locations.length) {
+      if (i + 1 !== locations.length) {
         elements.push(
           <div key={`splitter${i}`} className={style.splitter}>
             <FontAwesomeIcon icon={faAngleRight} />

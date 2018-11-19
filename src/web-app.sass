@@ -35,10 +35,29 @@ a, a:hover, a:visited, a:active
 
 h1, h2, h3, h4, h5, h6
   font-family: 'Oswald', sans-serif
-  margin: 0 0 10px
+  margin: 0 0 0.5em
   padding: 0
 
 .wrapper
+  //font-size: 25pt
+  @media (orientation: portrait) and (min-width: 970px)
+    font-size: 24pt
+
+  @media (orientation: portrait) and (min-width: 810px) and (max-width: 969px)
+    font-size: 20pt
+
+  @media (orientation: portrait) and (min-width: 650px) and (max-width: 809px)
+    font-size: 16pt
+
+  @media (orientation: portrait) and (min-width: 490px) and (max-width: 649px)
+    font-size: 12pt
+
+  @media (orientation: portrait) and (min-width: 400px) and (max-width: 489px)
+    font-size: 10pt
+
+  @media (orientation: portrait) and (max-width: 399px)
+    font-size: 8pt
+
   display: flex
   justify-content: center
 

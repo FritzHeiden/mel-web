@@ -42,7 +42,7 @@ export default class Button extends React.Component {
       <div onClick={() => this._handleClick()} className={buttonStyle}>
         {this._renderIcon()}
         {this._renderSpacer()}
-        {this.state.label}
+        <div>{this.state.label}</div>
       </div>
     )
   }

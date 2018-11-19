@@ -3,13 +3,18 @@ import {
   faTimes,
   faListUl,
   faDownload,
-  faBan
+  faBan,
+  faUser,
+  faDotCircle,
+  faMusic
 } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import styles from './download-bar.sass'
 import DownloadService from '../services/download-service'
 import Button from './atoms/button'
 import StringFormatter from '../utils/string-formatter'
+import Spinner from './atoms/spinner'
 
 class DownloadBar extends React.Component {
   constructor (props) {
@@ -47,7 +52,7 @@ class DownloadBar extends React.Component {
       this.props.history.location.pathname !== '/downloads' &&
       (!downloadItems || downloadItems.length === 0)
     ) {
-      return <div className={styles.wrapper + ' ' + styles.hidden} />
+      return null
     }
 
     let text = ''
@@ -140,16 +145,26 @@ class DownloadBar extends React.Component {
     })
 
     return (
-      `${artists.length} Artists, ` +
-      `${albums.length} Albums, ` +
-      `${downloadItems.length} Tracks selected for download. ` +
-      `(${StringFormatter.formatSize(totalSize)})`
+      <React.Fragment>
+        <div>{artists.length}</div>
+        <FontAwesomeIcon icon={faUser} />
+        <div>{albums.length}</div>
+        <FontAwesomeIcon icon={faDotCircle} />
+        <div>{downloadItems.length}</div>
+        <FontAwesomeIcon icon={faMusic} />
+        <div>{StringFormatter.formatSize(totalSize)}</div>
+      </React.Fragment>
     )
   }
 
   textDownloading () {
     const { currentItem } = this.state
-    return `Downloading ${currentItem.getTrack().getTitle()} ...`
+    return (
+      <React.Fragment>
+        <Spinner />
+        <div>{`${currentItem.getTrack().getTitle()} ...`}</div>
+      </React.Fragment>
+    )
   }
 }
 

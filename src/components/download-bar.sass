@@ -3,7 +3,6 @@
 
 .minimized
   display: flex
-  height: 50px
   flex: none
 
 .maximized
@@ -15,16 +14,29 @@
   display: flex
   align-items: center
   //font-weight: bold
-  padding: 0 20px
+  padding: 0.5em 2em 0.5em 2em
 
   .button
     font-weight: normal
-    padding: 5px 15px
+    padding: 0.5em 1em
     border-radius: 3px
+    margin: 0
+
+    & > :nth-child(3), & > :nth-child(2)
+      @media (orientation: portrait)
+        display: none
 
     &:not(:last-child)
       margin-right: 20px
 
 
   .text
+    display: flex
     flex: 1
+    align-items: center
+
+    & > *
+      margin-right: 0.2em
+
+      &:nth-child(even)
+        margin-right: 0.5em

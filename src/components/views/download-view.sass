@@ -31,7 +31,8 @@
     overflow: auto
     display: flex
     flex-direction: column
-    padding: 1em 2em 0 2em
+    @media (orientation: landscape)
+      padding: 1em 2em 0 2em
 
     & > *
       flex-shrink: 0
@@ -39,10 +40,15 @@
     .listItem
       display: flex
       align-items: center
-      padding: 0.1em
+      @media (orientation: portrait)
+        padding: 1em
+      @media (orientation: landscape)
+        padding: 0.5em
+      overflow: hidden
+      background-color: rgb(40, 40, 40)
 
-      &:last-child
-        padding-bottom: 2em
+      &:nth-child(even)
+        background-color: rgb(30, 30, 30)
 
       .artist
         display: flex
@@ -68,7 +74,7 @@
 
       .track
         display: flex
-        flex: 2
+        flex: 1
         text-overflow: ellipsis
         white-space: nowrap
         overflow: hidden

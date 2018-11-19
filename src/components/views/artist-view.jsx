@@ -67,14 +67,16 @@ export default class ArtistView extends React.Component {
             <h1>{artist.getName()}</h1>
           </div>
           <div className={styles.musicWrapper}>
-            <h2>Albums</h2>
+            <div className={styles.head}>
+              <h2>{'Albums'}</h2>
+            </div>
             <div className={styles.albumsWrapper}>
               {this.renderAlbumList(artist.getAlbums())}
             </div>
-            <h2>Appears on</h2>
-            <div className={styles.albumsWrapper}>
-              {this.renderAlbumList(artist.getFeatureAlbums())}
-            </div>
+            {/* <h2>Appears on</h2> */}
+            {/* <div className={styles.albumsWrapper}> */}
+            {/* {this.renderAlbumList(artist.getFeatureAlbums())} */}
+            {/* </div> */}
           </div>
         </div>
       </div>
@@ -89,13 +91,11 @@ export default class ArtistView extends React.Component {
         className={styles.albumWrapper}
         to={{ pathname: '/album/' + album.getId() }}
       >
-        <div className={styles.coverWrapper}>
-          <AlbumCover
-            className={styles.cover}
-            albumId={album.getId()}
-            melHttpService={melHttpService}
-          />
-        </div>
+        <AlbumCover
+          className={styles.cover}
+          albumId={album.getId()}
+          melHttpService={melHttpService}
+        />
         <div className={styles.title}>{album.getTitle()}</div>
         <div className={styles.year}>{album.getYear()}</div>
       </Link>

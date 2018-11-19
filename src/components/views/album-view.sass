@@ -6,42 +6,38 @@
 
   .albumWrapper
     display: flex
-    flex: 1
-    overflow: hidden
+    @media (orientation: portrait)
+      flex-direction: column
+      overflow: auto
+
+    @media (orientation: landscape)
+      flex: 1
+      overflow: hidden
 
     .albumInfo
       display: flex
       flex-direction: column
-      flex: 1
 
-      border-style: solid
-      border-color: rgb(50, 50, 50)
-      border-width: 0
+      border: 0 solid rgb(50, 50, 50)
       border-right-width: 1px
 
       .coverWrapper
-        margin: 20px
-        position: relative
-        border-radius: 2px
+        align-self: center
+        width: 18em
+        height: 18em
+        border-radius: 0.2em
         overflow: hidden
-
-        &:after
-          padding-top: 100%
-          content: ''
-          display: block
+        margin: 2em
 
         .cover
-          position: absolute
-
-          width: 100%
-          height: 100%
+          width: 18em
+          height: 18em
 
       .albumTitle
-        margin: 0 20px
+        margin: 0 2em 0 2em
 
       .download
-        margin-top: 15px
-        padding: 10px 20px
+        padding: 0.7em 2em 0.7em 2em
         display: flex
         cursor: pointer
         background-color: rgb(30, 30, 30)
@@ -50,19 +46,20 @@
           background-color: rgb(50, 50, 50)
 
         .icon
-          width: 20px
-          margin-right: 10px
+          margin-right: 1em
 
     .musicWrapper
       display: flex
       flex-direction: column
-      flex: 3
-      padding: 20px
-      overflow-y: auto
 
-      h3
-        margin-top: 5pt
-        margin-bottom: 2pt
+      @media (orientation: landscape)
+        overflow: auto
+        flex: 3
+
+      .head
+        margin: 2em 2em 1em 2em
+        h2, h3
+          margin: 0
 
       .discWrapper
         display: flex
@@ -70,10 +67,17 @@
         flex-direction: column
         border-radius: 2px
 
+        @media (orientation: landscape)
+          margin: 0 2em 0 2em
+
         .trackWrapper
+          flex-shrink: 0
           display: flex
           cursor: pointer
-          height: 40px
+          @media (orientation: portrait)
+            padding: 1em 2em 1em 2em
+          @media (orientation: landscape)
+            padding: 0.5em 2em 0.5em 2em
           align-items: center
 
           background-color: rgb(40, 40, 40)
@@ -85,12 +89,13 @@
             background-color: rgb(50, 50, 50)
 
           .number
-            width: 30px
-            padding: 7px
+            width: 1em
+            margin-right: 1em
+            //padding: 7px
             color: rgb(150, 150, 150)
             display: flex
             justify-content: flex-end
 
           .title
             flex: 1
-            padding: 7px
+            //padding: 7px
