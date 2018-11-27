@@ -5,8 +5,9 @@ import { faUser } from '@fortawesome/free-solid-svg-icons'
 
 import NavigationHistoryBar from '../navigation-history-bar'
 import styles from './artist-view.sass'
-import AlbumCover from '../album-cover'
+import AlbumCover from '../atoms/album-cover'
 import Spinner from '../atoms/spinner'
+import ArtistThumbnail from '../atoms/artist-thumbnail'
 
 export default class ArtistView extends React.Component {
   constructor (props) {
@@ -67,12 +68,13 @@ export default class ArtistView extends React.Component {
         />
         <div className={styles.artistWrapper}>
           <div className={styles.artistInfo}>
-            <div className={styles.thumbWrapper}>
-              <div className={styles.placeholder}>
-                <FontAwesomeIcon icon={faUser} />
-              </div>
-              <div className={styles.thumb} />
-            </div>
+            <ArtistThumbnail artist={artist} className={styles.thumb} />
+            {/* <div className={styles.thumbWrapper}> */}
+            {/* <div className={styles.placeholder}> */}
+            {/* <FontAwesomeIcon icon={faUser} /> */}
+            {/* </div> */}
+            {/* <div className={styles.thumb} /> */}
+            {/* </div> */}
             <h1>{artist.getName()}</h1>
           </div>
           <div className={styles.musicWrapper}>
@@ -104,7 +106,7 @@ export default class ArtistView extends React.Component {
         >
           <AlbumCover
             className={styles.cover}
-            albumId={album.getId()}
+            album={album}
             melHttpService={melHttpService}
           />
           <div className={styles.title}>{album.getTitle()}</div>

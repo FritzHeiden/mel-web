@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styles from './library-view.sass'
+import ArtistThumbnail from '../atoms/artist-thumbnail'
 
 export default class LibraryView extends React.Component {
   constructor (props) {
@@ -27,12 +28,7 @@ export default class LibraryView extends React.Component {
             className={styles.listItem}
             onClick={() => history.push(`/artist/${artist.getId()}`)}
           >
-            <div className={styles.thumb}>
-              {artist
-                .getName()
-                .split('')
-                .map((character, index) => <div key={index}>{character}</div>)}
-            </div>
+            <ArtistThumbnail artist={artist} className={styles.thumb} />
             <div className={styles.text}>{artist.getName()}</div>
           </div>
         ))

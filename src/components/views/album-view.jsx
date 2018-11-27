@@ -10,7 +10,7 @@ import {
 import NavigationHistoryBar from '../navigation-history-bar'
 import styles from './album-view.sass'
 import DownloadService from '../../services/download-service'
-import AlbumCover from '../album-cover'
+import AlbumCover from '../atoms/album-cover'
 import Spinner from '../atoms/spinner'
 
 export default class AlbumView extends React.Component {
@@ -90,13 +90,11 @@ export default class AlbumView extends React.Component {
         />
         <div className={styles.albumWrapper}>
           <div className={styles.albumInfo}>
-            <div className={styles.coverWrapper}>
-              <AlbumCover
-                albumId={album.getId()}
-                className={styles.cover}
-                melHttpService={melHttpService}
-              />
-            </div>
+            <AlbumCover
+              album={album}
+              className={styles.cover}
+              melHttpService={melHttpService}
+            />
             <div className={styles.albumTitle}>
               <h1>{album.getTitle()}</h1>
             </div>
