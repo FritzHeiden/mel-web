@@ -1,18 +1,19 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { Artist } from 'mel-core'
 
 import NavigationHistoryBar from '../navigation-history-bar'
 import styles from './artist-view.sass'
-import AlbumCover from '../atoms/album-cover'
 import Spinner from '../atoms/spinner'
 import ArtistThumbnail from '../atoms/artist-thumbnail'
+import AlbumTileList from '../organisms/album-tile-list'
 
-export default class ArtistView extends React.Component {
+class ArtistView extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {
+      artist: new Artist(null, 'Loading ...')
+    }
     this.initialize().then()
   }
 
@@ -44,6 +45,7 @@ export default class ArtistView extends React.Component {
   }
 
   render () {
+    const { history, melHttpService } = this.props
     const { artist } = this.state
     if (!artist) {
       return (
@@ -69,56 +71,24 @@ export default class ArtistView extends React.Component {
         <div className={styles.artistWrapper}>
           <div className={styles.artistInfo}>
             <ArtistThumbnail artist={artist} className={styles.thumb} />
-            {/* <div className={styles.thumbWrapper}> */}
-            {/* <div className={styles.placeholder}> */}
-            {/* <FontAwesomeIcon icon={faUser} /> */}
-            {/* </div> */}
-            {/* <div className={styles.thumb} /> */}
-            {/* </div> */}
             <h1>{artist.getName()}</h1>
           </div>
           <div className={styles.musicWrapper}>
             <div className={styles.head}>
               <h2>{'Albums'}</h2>
             </div>
-            <div className={styles.albumsWrapper}>
-              {this.renderAlbumList(artist.getAlbums())}
-            </div>
-            {/* <h2>Appears on</h2> */}
-            {/* <div className={styles.albumsWrapper}> */}
-            {/* {this.renderAlbumList(artist.getFeatureAlbums())} */}
-            {/* </div> */}
+            <AlbumTileList
+              albums={artist
+                .getAlbums()
+                .sort((a, b) => b.getYear() - a.getYear())}
+              history={history}
+              melHttpService={melHttpService}
+            />
           </div>
         </div>
       </div>
     )
   }
-
-  renderAlbumList (albums) {
-    const { melHttpService } = this.props
-    return albums
-      .sort((a, b) => b.year - a.year)
-      .map(album => (
-        <Link
-          key={album.getId()}
-          className={styles.albumWrapper}
-          to={{ pathname: '/album/' + album.getId() }}
-        >
-          <AlbumCover
-            className={styles.cover}
-            album={album}
-            melHttpService={melHttpService}
-          />
-          <div className={styles.title}>{album.getTitle()}</div>
-          <div className={styles.year}>{album.getYear()}</div>
-        </Link>
-      ))
-      .concat(
-        [null, null, null, null, null, null, null, null, null, null].map(
-          (element, index) => {
-            return <div key={index} className={styles.placeholder} />
-          }
-        )
-      )
-  }
 }
+
+export default ArtistView

@@ -4,11 +4,14 @@ import Image from './image'
 class AlbumCover extends React.Component {
   render () {
     const { album, melHttpService, className } = this.props
-    if (!album) return <Image placeholderText={'album'} className={className} />
+    let placeholderText = 'album'
+    if (album) placeholderText = album.getTitle()
+    let url = ''
+    if (album && melHttpService) { url = melHttpService.getAlbumCoverUrl(album.getId()) }
     return (
       <Image
-        url={melHttpService.getAlbumCoverUrl(album.getId())}
-        placeholderText={album.getTitle()}
+        url={url}
+        placeholderText={placeholderText}
         className={className}
       />
     )

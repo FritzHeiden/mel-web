@@ -6,6 +6,7 @@ import {
   faCheck,
   faUser
 } from '@fortawesome/free-solid-svg-icons'
+import { Album, Artist } from 'mel-core'
 
 import NavigationHistoryBar from '../navigation-history-bar'
 import styles from './album-view.sass'
@@ -16,7 +17,9 @@ import Spinner from '../atoms/spinner'
 export default class AlbumView extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {
+      album: new Album(null, new Artist(null, 'Loading ...'), 'Loading ...')
+    }
     this.initialize().then()
   }
 
