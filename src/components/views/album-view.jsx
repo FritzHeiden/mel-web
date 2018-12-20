@@ -128,7 +128,7 @@ export default class AlbumView extends React.Component {
         <div className={styles.icon}>
           <FontAwesomeIcon icon={icon} />
         </div>
-        <div>{text}</div>
+        <div className={styles.text}>{text}</div>
       </div>
     )
   }
