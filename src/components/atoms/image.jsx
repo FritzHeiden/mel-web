@@ -1,10 +1,10 @@
-import React from 'react'
+import React from "react";
 
-import styles from './image.sass'
+import styles from "./image.sass";
 
 class Image extends React.Component {
-  render () {
-    const { url, placeholderText, className } = this.props
+  render() {
+    const { url, placeholderText, className } = this.props;
     // let imageUrl = null
     // if (album) {
     //   imageUrl = melHttpService.getAlbumCoverUrl(album.getId())
@@ -16,7 +16,7 @@ class Image extends React.Component {
       <div className={className}>
         <div className={styles.placeholder}>
           {placeholderText
-            .split('')
+            .split("")
             .map((character, index) => <div key={index}>{character}</div>)}
         </div>
         <div
@@ -24,8 +24,8 @@ class Image extends React.Component {
           style={{ backgroundImage: `url(${url})` }}
         />
       </div>
-    )
+    );
   }
 }
 
-export default Image
+export default Image;

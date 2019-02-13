@@ -1,52 +1,52 @@
-import React from 'react'
-import { Route, Link } from 'react-router-dom'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleRight } from '@fortawesome/free-solid-svg-icons'
-import style from './navigation-history-bar.sass'
+import React from "react";
+import { Route, Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import style from "./navigation-history-bar.sass";
 
 export default class NavigationHistoryBar extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {}
+  constructor(props) {
+    super(props);
+    this.state = {};
 
-    this._gatherProps(props)
+    this._gatherProps(props);
   }
 
-  componentWillReceiveProps (newProps) {
-    this._gatherProps(newProps)
-    this.setState(this.state)
+  componentWillReceiveProps(newProps) {
+    this._gatherProps(newProps);
+    this.setState(this.state);
   }
 
-  _gatherProps (props) {
-    this.state.locations = props.locations
+  _gatherProps(props) {
+    this.state.locations = props.locations;
   }
 
-  render () {
+  render() {
     if (this.state.locations) {
-      return <div className={style.wrapper}>{this._renderLocations()}</div>
+      return <div className={style.wrapper}>{this._renderLocations()}</div>;
     } else {
-      return <div />
+      return <div />;
     }
   }
 
-  _renderLocations () {
-    const { locations } = this.state
-    let elements = []
+  _renderLocations() {
+    const { locations } = this.state;
+    let elements = [];
     for (let i = 0; i < locations.length; i++) {
-      let location = locations[i]
+      let location = locations[i];
       if (location.icon) {
         elements.push(
           <Link key={i} className={style.element} to={location.url}>
             <FontAwesomeIcon icon={location.icon} />
             <div>{location.name}</div>
           </Link>
-        )
+        );
       } else {
         elements.push(
           <Link key={i} className={style.element} to={location.url}>
             {location.name}
           </Link>
-        )
+        );
       }
 
       if (i + 1 !== locations.length) {
@@ -54,10 +54,10 @@ export default class NavigationHistoryBar extends React.Component {
           <div key={`splitter${i}`} className={style.splitter}>
             <FontAwesomeIcon icon={faAngleRight} />
           </div>
-        )
+        );
       }
     }
 
-    return elements
+    return elements;
   }
 }

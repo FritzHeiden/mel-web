@@ -1,18 +1,18 @@
-import React from 'react'
+import React from "react";
 
-import styles from './tile-list.sass'
+import styles from "./tile-list.sass";
 
 class TileList extends React.Component {
-  render () {
-    const { children, className } = this.props
+  render() {
+    const { children, className } = this.props;
     return (
-      <div className={[styles.wrapper, className].join(' ')}>{children}</div>
-    )
+      <div className={[styles.wrapper, className].join(" ")}>{children}</div>
+    );
   }
 }
 
 TileList.defaultProps = {
-  className: ''
-}
+  className: ""
+};
 
-export default TileList
+export default TileList;

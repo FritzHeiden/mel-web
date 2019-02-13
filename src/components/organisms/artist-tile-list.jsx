@@ -1,12 +1,12 @@
-import React from 'react'
-import TileList from './tile-list'
-import ArtistCard from '../molecules/artist-card'
+import React from "react";
+import TileList from "./tile-list";
+import ArtistCard from "../molecules/artist-card";
 
-import styles from './artist-tile-list.sass'
+import styles from "./artist-tile-list.sass";
 
 class ArtistTileList extends React.Component {
-  render () {
-    const { artists, history, className } = this.props
+  render() {
+    const { artists, history, className } = this.props;
 
     return (
       <TileList className={className}>
@@ -22,12 +22,12 @@ class ArtistTileList extends React.Component {
           .concat(
             [null, null, null, null, null, null, null, null, null, null].map(
               (element, index) => (
-                <ArtistCard key={'p' + index} className={styles.placeholder} />
+                <ArtistCard key={"p" + index} className={styles.placeholder} />
               )
             )
           )}
       </TileList>
-    )
+    );
   }
 }
 
@@ -35,10 +35,10 @@ ArtistTileList.defaultProps = {
   artists: [],
   history: {
     push: () => {
-      console.error('Missing prop in ArtistTileList: history')
+      console.error("Missing prop in ArtistTileList: history");
     }
   },
-  className: ''
-}
+  className: ""
+};
 
-export default ArtistTileList
+export default ArtistTileList;

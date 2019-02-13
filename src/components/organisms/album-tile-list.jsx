@@ -1,12 +1,12 @@
-import React from 'react'
+import React from "react";
 
-import TileList from './tile-list'
-import styles from './album-tile-list.sass'
-import AlbumCard from '../molecules/album-card'
+import TileList from "./tile-list";
+import styles from "./album-tile-list.sass";
+import AlbumCard from "../molecules/album-card";
 
 class AlbumTileList extends React.Component {
-  render () {
-    const { albums, history, melHttpService } = this.props
+  render() {
+    const { albums, history, melHttpService } = this.props;
     return (
       <TileList>
         {albums
@@ -21,12 +21,12 @@ class AlbumTileList extends React.Component {
           .concat(
             [null, null, null, null, null, null, null, null, null, null].map(
               (element, index) => (
-                <AlbumCard key={'p' + index} className={styles.placeholder} />
+                <AlbumCard key={"p" + index} className={styles.placeholder} />
               )
             )
           )}
       </TileList>
-    )
+    );
   }
 }
 
@@ -34,10 +34,10 @@ AlbumTileList.defaultProps = {
   albums: [],
   history: {
     push: () => {
-      console.error('Missing prop in AlbumTileList: history')
+      console.error("Missing prop in AlbumTileList: history");
     }
   },
   melHttpService: null
-}
+};
 
-export default AlbumTileList
+export default AlbumTileList;

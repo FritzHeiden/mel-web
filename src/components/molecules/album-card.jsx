@@ -1,16 +1,16 @@
-import React from 'react'
-import { Album, Artist } from 'mel-core'
+import React from "react";
+import { Album, Artist } from "mel-core";
 
-import Card from './card'
-import AlbumCover from '../atoms/album-cover'
-import styles from './album-card.sass'
+import Card from "./card";
+import AlbumCover from "../atoms/album-cover";
+import styles from "./album-card.sass";
 
-const PLACEHOLDER_ALBUM_TITLE = 'Album'
-const PLACEHOLDER_ARTIST_NAME = 'Artist'
+const PLACEHOLDER_ALBUM_TITLE = "Album";
+const PLACEHOLDER_ARTIST_NAME = "Artist";
 
 class AlbumCard extends React.Component {
-  render () {
-    const { album, melHttpService, className, onClick } = this.props
+  render() {
+    const { album, melHttpService, className, onClick } = this.props;
     return (
       <Card
         image={<AlbumCover album={album} melHttpService={melHttpService} />}
@@ -23,7 +23,7 @@ class AlbumCard extends React.Component {
         onClick={onClick}
         className={className}
       />
-    )
+    );
   }
 }
 
@@ -35,6 +35,6 @@ AlbumCard.defaultProps = {
   ),
   melHttpService: null,
   onClick: () => {}
-}
+};
 
-export default AlbumCard
+export default AlbumCard;
