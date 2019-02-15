@@ -23,7 +23,7 @@
     "css-loader": "^0.28.7",
     "file-loader": "^1.1.11",
     "jszip": "^3.1.5",
-    "mel-core": "fritzendgltig/mel-core#alpha-18w47a",
+    "mel-core": "fritzendgltig/mel-core#alpha-19w07a",
     "node-sass": "^4.11.0",
     "prettier-standard": "^8.0.1",
     "react": "^16.1.1",
