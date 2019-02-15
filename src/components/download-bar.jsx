@@ -73,56 +73,60 @@ class DownloadBar extends React.Component {
     }
 
     return (
-      <div className={styles.wrapper + " " + styles.minimized}>
-        <div className={styles.text}>{text}</div>
-        <Button
-          className={styles.button}
-          icon={faTimes}
-          label={"Clear"}
-          onClick={() => downloadService.deleteList()}
-        />
-        {this.props.history.location.pathname === "/downloads" ? (
-          <Button
-            className={styles.button}
-            icon={faListUl}
-            label={"Close List"}
-            onClick={() =>
-              this.props.history.action === "PUSH"
-                ? this.props.history.goBack()
-                : this.props.history.push("/")
-            }
-          />
-        ) : (
-          <Button
-            className={styles.button}
-            icon={faListUl}
-            label={"Open List"}
-            onClick={() => this.props.history.push("/downloads")}
-          />
-        )}
-        {downloadService.getState() === DownloadService.DOWNLOADING ? (
-          <Button
-            className={styles.button}
-            icon={faBan}
-            label={"Abort"}
-            accent
-            onClick={() => downloadService.abortDownload()}
-            disabled={false}
-          />
-        ) : (
-          <Button
-            className={styles.button}
-            icon={faDownload}
-            label={"Download"}
-            accent
-            onClick={() => downloadService.startDownload()}
-            disabled={
-              downloadService.getDownloadItems().length === 0 ||
-              (downloadService.getState() !== DownloadService.DONE &&
-                downloadService.getState() !== DownloadService.PENDING)
-            }
-          />
-        )}
+      <div className={styles.placeholder}>
+        <div className={styles.floating}>
+          <div className={styles.wrapper}>
+            <div className={styles.text}>{text}</div>
+            <Button
+              className={styles.button}
+              icon={faTimes}
+              label={"Clear"}
+              onClick={() => downloadService.deleteList()}
+            />
+            {this.props.history.location.pathname === "/downloads" ? (
+              <Button
+                className={styles.button}
+                icon={faListUl}
+                label={"Close List"}
+                onClick={() =>
+                  this.props.history.action === "PUSH"
+                    ? this.props.history.goBack()
+                    : this.props.history.push("/")
+                }
+              />
+            ) : (
+              <Button
+                className={styles.button}
+                icon={faListUl}
+                label={"Open List"}
+                onClick={() => this.props.history.push("/downloads")}
+              />
+            )}
+            {downloadService.getState() === DownloadService.DOWNLOADING ? (
+              <Button
+                className={styles.button}
+                icon={faBan}
+                label={"Abort"}
+                accent
+                onClick={() => downloadService.abortDownload()}
+                disabled={false}
+              />
+            ) : (
+              <Button
+                className={styles.button}
+                icon={faDownload}
+                label={"Download"}
+                accent
+                onClick={() => downloadService.startDownload()}
+                disabled={
+                  downloadService.getDownloadItems().length === 0 ||
+                  (downloadService.getState() !== DownloadService.DONE &&
+                    downloadService.getState() !== DownloadService.PENDING)
+                }
+              />
+            )}
+          </div>
+        </div>
       </div>
     );
   }

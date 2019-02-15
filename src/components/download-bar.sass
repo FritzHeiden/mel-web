@@ -1,42 +1,46 @@
-.hidden
-  display: none
-
-.minimized
+.placeholder
   display: flex
   flex: none
+  height: 3.5em
 
-.maximized
-  display: flex
-  flex: 1
-
-.wrapper
-  background-color: rgb(70, 70, 70)
-  display: flex
-  align-items: center
-  //font-weight: bold
-  padding: 0.5em 2em 0.5em 2em
-
-  .button
-    font-weight: normal
-    padding: 0.5em 1em
-    border-radius: 3px
-    margin: 0
-
-    & > :nth-child(3), & > :nth-child(2)
-      @media (orientation: portrait)
-        display: none
-
-    &:not(:last-child)
-      margin-right: 20px
-
-
-  .text
+  .floating
+    position: fixed
+    bottom: 0
+    width: 100vw
+    max-width: 1300px
     display: flex
-    flex: 1
-    align-items: center
+    height: inherit
 
-    & > *
-      margin-right: 0.2em
+    .wrapper
+      display: flex
+      flex: 1
+      flex: 1
+      background-color: rgb(70, 70, 70)
+      align-items: center
+      padding: 0.5em 2em 0.5em 2em
 
-      &:nth-child(even)
-        margin-right: 0.5em
+
+      .button
+        font-weight: normal
+        padding: 0.5em 1em
+        border-radius: 3px
+        margin: 0
+
+        & > :nth-child(3), & > :nth-child(2)
+          @media (orientation: portrait)
+            display: none
+
+        &:not(:last-child)
+          margin-right: 20px
+
+
+      .text
+        display: flex
+        flex: 1
+        align-items: center
+
+        & > *
+          margin-right: 0.2em
+
+          &:nth-child(even)
+            margin-right: 0.5em
