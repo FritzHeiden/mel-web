@@ -5,6 +5,7 @@ import { MelClientSocket, MelHttpService } from "mel-core";
 
 import "./html/index.html";
 import "./res/fonts/Oswald/Oswald-Regular.ttf";
+import "./res/fonts/Oswald/Oswald-Bold.ttf";
 import "./res/fonts/Open_Sans/OpenSans-Regular.ttf";
 import "./res/fonts/Roboto/Roboto-Regular.ttf";
 import "./res/favicon.ico";
