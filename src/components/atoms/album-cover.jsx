@@ -7,7 +7,7 @@ class AlbumCover extends React.Component {
     let placeholderText = "album";
     if (album) placeholderText = album.getTitle();
     let url = "";
-    if (album && melHttpService) {
+    if (album && album.getId() && melHttpService) {
       url = melHttpService.getAlbumCoverUrl(album.getId());
     }
     return (
