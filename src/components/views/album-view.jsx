@@ -145,27 +145,30 @@ export default class AlbumView extends React.Component {
     });
 
     const elements = [];
-    discNumbers.sort((a, b) => a - b).forEach(discNumber => {
-      if (discNumbers.length > 1) {
+    discNumbers
+      .sort((a, b) => a - b)
+      .forEach(discNumber => {
+        if (discNumbers.length > 1) {
+          elements.push(
+            <div className={styles.head} key={"disc" + discNumber}>
+              <h3>{"Disc " + discNumber}</h3>
+            </div>
+          );
+        }
         elements.push(
-          <div className={styles.head} key={"disc" + discNumber}>
-            <h3>{"Disc " + discNumber}</h3>
+          <div key={discNumber} className={styles.discWrapper}>
+            {tracks
+              .filter(track => track.getDiscNumber() === discNumber)
+              .sort((trackA, trackB) => trackA.getNumber() - trackB.getNumber())
+              .map(track => (
+                <div key={track.getId()} className={styles.trackWrapper}>
+                  <div className={styles.number}>{track.getNumber()}</div>
+                  <div className={styles.title}>{track.getTitle()}</div>
+                </div>
+              ))}
           </div>
         );
-      }
-      elements.push(
-        <div key={discNumber} className={styles.discWrapper}>
-          {tracks
-            .filter(track => track.getDiscNumber() === discNumber)
-            .map(track => (
-              <div key={track.getId()} className={styles.trackWrapper}>
-                <div className={styles.number}>{track.getNumber()}</div>
-                <div className={styles.title}>{track.getTitle()}</div>
-              </div>
-            ))}
-        </div>
-      );
-    });
+      });
     return elements;
   }
 }
